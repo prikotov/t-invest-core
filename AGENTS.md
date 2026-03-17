@@ -124,8 +124,4 @@ src/Service/{Group}/
 
 ## Справочник API
 
-Сервисы соответствуют эндпоинтам API Тинькофф Инвестиций:
-- `UsersService` → `tinkoff.public.invest.api.contract.v1.UsersService`
-- `OperationsService` → `tinkoff.public.invest.api.contract.v1.OperationsService`
-- `InstrumentsService` → `tinkoff.public.invest.api.contract.v1.InstrumentsService`
-- `OrdersService` → `tinkoff.public.invest.api.contract.v1.OrdersService`
+OpenAPI спецификация: https://russianinvestments.github.io/investAPI/swagger-ui/openapi.yaml
