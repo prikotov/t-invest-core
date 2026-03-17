@@ -1,146 +1,146 @@
-# AI Agent Instructions
+# Инструкции для AI-агента
 
-## Project Overview
+## Описание проекта
 
-T-Invest Skill - PHP console application for Tinkoff Invest API integration.
+T-Invest Skill - консольное приложение на PHP для работы с API Тинькофф Инвестиций.
 
-## Tech Stack
+## Технологии
 
 - PHP 8.1+
 - Symfony Console (CLI)
 - Symfony DependencyInjection (DI)
 - Guzzle HTTP Client
-- Monolog (Logging)
-- PHPUnit (Testing)
+- Monolog (логирование)
+- PHPUnit (тестирование)
 
-## Project Structure
+## Структура проекта
 
 ```
-├── bin/skill                    # CLI entry point
+├── bin/skill                    # Точка входа CLI
 ├── config/
-│   ├── container.php            # DI container bootstrap
-│   └── services.yaml            # Service definitions
+│   ├── container.php            # Инициализация DI-контейнера
+│   └── services.yaml            # Определение сервисов
 ├── src/
-│   ├── Command/                 # Console commands
-│   ├── Service/                 # Business logic layer
-│   │   └── Portfolio/           # Portfolio service group
-│   └── Component/TInvest/       # API components
-│       ├── Shared/              # Shared DTOs, Factories, Helpers
-│       ├── UsersService/        # Users API
-│       ├── OperationsService/   # Portfolio/Operations API
-│       ├── InstrumentsService/  # Instruments/Dividends API
-│       └── OrdersService/       # Orders API
-├── tests/                       # PHPUnit tests
-├── .env                         # Environment config (committed)
-└── .env.local                   # Local overrides (gitignored)
+│   ├── Command/                 # Консольные команды
+│   ├── Service/                 # Слой бизнес-логики
+│   │   └── Portfolio/           # Группа сервисов портфеля
+│   └── Component/TInvest/       # API-компоненты
+│       ├── Shared/              # Общие DTO, фабрики, хелперы
+│       ├── UsersService/        # API пользователей
+│       ├── OperationsService/   # API портфеля/операций
+│       ├── InstrumentsService/  # API инструментов/дивидендов
+│       └── OrdersService/       # API заявок
+├── tests/                       # Тесты PHPUnit
+├── .env                         # Конфигурация (в репозитории)
+└── .env.local                   # Локальные переопределения (игнорируется git)
 ```
 
-## Commands
+## Команды
 
-### Install dependencies
+### Установка зависимостей
 ```bash
 composer install
 ```
 
-### Run tests
+### Тесты
 ```bash
 composer test
 ```
 
-### Code style
+### Код-стайл
 ```bash
-composer cs-check    # Check PSR-12
-composer cs-fix      # Fix PSR-12 violations
+composer cs-check    # Проверка PSR-12
+composer cs-fix      # Исправление нарушений PSR-12
 ```
 
-### Static analysis
+### Статический анализ
 ```bash
 composer stan        # PHPStan
 composer psalm       # Psalm
 ```
 
-### Run application
+### Запуск приложения
 ```bash
 ./bin/skill
 ./bin/skill portfolio:positions
 ./bin/skill --help
 ```
 
-## Architecture Patterns
+## Архитектура
 
-### Three-Layer Architecture
+### Трёхуровневая архитектура
 
-1. **Command** - Console commands, only output formatting
-2. **Service** - Business logic, data preparation for commands
-3. **Component** - Raw API calls, DTOs from API responses
+1. **Command** - консольные команды, только форматирование вывода
+2. **Service** - бизнес-логика, подготовка данных для команд
+3. **Component** - вызовы API, DTO из ответов API
 
-### Service Layer
+### Слой сервисов
 ```
 src/Service/{Group}/
-├── Dto/                          # View DTOs for commands
-├── {Group}ServiceInterface.php   # Interface
-└── {Group}Service.php            # Implementation
+├── Dto/                          # View-DTO для команд
+├── {Group}ServiceInterface.php   # Интерфейс
+└── {Group}Service.php            # Реализация
 ```
 
-### API Components
-Each API service follows this structure:
-- `*ServiceComponentInterface.php` - Interface (one method per API endpoint)
-- `*ServiceComponent.php` - Implementation
-- `Dto/` - API response DTOs
-- `Mapper/` - Response mappers (JSON → DTO)
-- `Request/` - Request DTOs (optional)
-- `Enum/` - Enums (optional)
+### API-компоненты
+Каждый API-сервис следует структуре:
+- `*ServiceComponentInterface.php` - Интерфейс (один метод на endpoint API)
+- `*ServiceComponent.php` - Реализация
+- `Dto/` - DTO ответов API
+- `Mapper/` - Мапперы ответов (JSON → DTO)
+- `Request/` - DTO запросов (опционально)
+- `Enum/` - Перечисления (опционально)
 
 ### Dependency Injection
-- All services registered in `config/services.yaml`
-- Autowiring enabled
-- Parameters bound via `$token`, `$accountId`, `$baseUrl`
-- DTOs excluded from autowiring
+- Все сервисы регистрируются в `config/services.yaml`
+- Autowiring включён
+- Параметры привязываются через `$token`, `$accountId`, `$baseUrl`
+- DTO исключены из autowiring
 
-## Environment Variables
+## Переменные окружения
 
-Required in `.env` or `.env.local`:
+Требуются в `.env` или `.env.local`:
 ```
-TINVEST_TOKEN=your-api-token
-TINVEST_ACCOUNT_ID=your-account-id
+TINVEST_TOKEN=ваш-api-токен
+TINVEST_ACCOUNT_ID=id-счёта
 TINVEST_BASE_URL=https://invest-public-api.tbank.ru/rest/
 LOG_LEVEL=debug
 ```
 
-## API Details
+## Детали API
 
 - Base URL: `https://invest-public-api.tbank.ru/rest/`
 - Content-Type: `application/json`
-- REST API (not gRPC)
+- REST API (не gRPC)
 
-## When Making Changes
+## При внесении изменений
 
-### Adding new API service
-1. Create service directory under `src/Component/TInvest/`
-2. Create Interface, Component, DTOs, Mappers
-3. Register in `config/services.yaml`
-4. Add unit tests in `tests/Component/TInvest/*/Mapper/`
+### Добавление нового API-сервиса
+1. Создать директорию сервиса в `src/Component/TInvest/`
+2. Создать Interface, Component, DTOs, Mappers
+3. Зарегистрировать в `config/services.yaml`
+4. Добавить тесты в `tests/Component/TInvest/*/Mapper/`
 
-### Adding new console command
-1. Create service in `src/Service/{Group}/`
-2. Create command in `src/Command/`
-3. Register command in `bin/skill`
+### Добавление новой консольной команды
+1. Создать сервис в `src/Service/{Group}/`
+2. Создать команду в `src/Command/`
+3. Зарегистрировать команду в `bin/skill`
 
-### Before committing
-1. Run `composer cs-check` - fix violations
-2. Run `composer stan` - fix PHPStan errors
-3. Run `composer psalm` - fix Psalm errors
-4. Run `composer test` - ensure tests pass
+### Перед коммитом
+1. `composer cs-check` - исправить нарушения
+2. `composer stan` - исправить ошибки PHPStan
+3. `composer psalm` - исправить ошибки Psalm
+4. `composer test` - убедиться что тесты проходят
 
-### Code style notes
-- No comments in code unless explicitly requested
-- Use `declare(strict_types=1);`
-- Use readonly properties in DTOs
-- Use PHP 8.1+ features (enums, readonly, etc.)
+### Стиль кода
+- Без комментариев в коде, если явно не запрошено
+- Использовать `declare(strict_types=1);`
+- Использовать readonly-свойства в DTO
+- Использовать возможности PHP 8.1+ (enums, readonly и т.д.)
 
-## API Reference
+## Справочник API
 
-Services map to Tinkoff Invest API endpoints:
+Сервисы соответствуют эндпоинтам API Тинькофф Инвестиций:
 - `UsersService` → `tinkoff.public.invest.api.contract.v1.UsersService`
 - `OperationsService` → `tinkoff.public.invest.api.contract.v1.OperationsService`
 - `InstrumentsService` → `tinkoff.public.invest.api.contract.v1.InstrumentsService`
