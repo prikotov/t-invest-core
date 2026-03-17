@@ -5,23 +5,22 @@ declare(strict_types=1);
 namespace TInvest\Skill\Command;
 
 use Override;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use TInvest\Skill\Service\Accounts\AccountsServiceInterface;
 
+#[AsCommand(
+    name: 'accounts:list',
+    description: 'Get list of user accounts',
+)]
 final class AccountsListCommand extends Command
 {
     public function __construct(
         private readonly AccountsServiceInterface $accountsService,
     ) {
-        parent::__construct('accounts:list');
-    }
-
-    #[Override]
-    protected function configure(): void
-    {
-        $this->setDescription('Get list of user accounts');
+        parent::__construct();
     }
 
     #[Override]

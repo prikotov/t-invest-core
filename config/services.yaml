@@ -22,6 +22,11 @@ services:
             - '../src/Component/TInvest/*/Enum/*'
             - '../src/Component/TInvest/*/Request/*'
             - '../src/Service/*/Dto/*'
+            - '../src/Command/*'
+
+    TInvest\Skill\Command\:
+        resource: '../src/Command/*'
+        tags: ['console.command']
 
     GuzzleHttp\Client:
         class: GuzzleHttp\Client

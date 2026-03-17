@@ -4,10 +4,6 @@
 declare(strict_types=1);
 
 use Symfony\Component\Console\Application;
-use TInvest\Skill\Command\AccountsListCommand;
-use TInvest\Skill\Command\InstrumentsFundamentalsCommand;
-use TInvest\Skill\Command\MainCommand;
-use TInvest\Skill\Command\PortfolioShowCommand;
 
 if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
     require __DIR__ . '/../vendor/autoload.php';
@@ -18,9 +14,9 @@ if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
 $container = require __DIR__ . '/../config/container.php';
 
 $application = new Application('T-Invest Skill', '1.0.0');
-$application->add($container->get(MainCommand::class));
-$application->add($container->get(AccountsListCommand::class));
-$application->add($container->get(PortfolioShowCommand::class));
-$application->add($container->get(InstrumentsFundamentalsCommand::class));
+
+foreach ($container->findTaggedServiceIds('console.command') as $id => $tags) {
+    $application->add($container->get($id));
+}
 
 exit($application->run());

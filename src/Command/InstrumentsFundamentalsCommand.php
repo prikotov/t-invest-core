@@ -5,25 +5,29 @@ declare(strict_types=1);
 namespace TInvest\Skill\Command;
 
 use Override;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use TInvest\Skill\Service\Instruments\InstrumentsServiceInterface;
 
+#[AsCommand(
+    name: 'instruments:fundamentals',
+    description: 'Get fundamental indicators for instruments by tickers',
+)]
 final class InstrumentsFundamentalsCommand extends Command
 {
     public function __construct(
         private readonly InstrumentsServiceInterface $instrumentsService,
     ) {
-        parent::__construct('instruments:fundamentals');
+        parent::__construct();
     }
 
     #[Override]
     protected function configure(): void
     {
-        $this->setDescription('Get fundamental indicators for instruments by tickers')
-            ->addArgument('tickers', InputArgument::IS_ARRAY | InputArgument::REQUIRED, 'Tickers (space-separated)');
+        $this->addArgument('tickers', InputArgument::IS_ARRAY | InputArgument::REQUIRED, 'Tickers (space-separated)');
     }
 
     #[Override]

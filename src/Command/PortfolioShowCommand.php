@@ -5,25 +5,29 @@ declare(strict_types=1);
 namespace TInvest\Skill\Command;
 
 use Override;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use TInvest\Skill\Component\TInvest\OperationsService\OperationsServiceComponentInterface;
 
+#[AsCommand(
+    name: 'portfolio:show',
+    description: 'Show portfolio with optional ticker filter',
+)]
 final class PortfolioShowCommand extends Command
 {
     public function __construct(
         private readonly OperationsServiceComponentInterface $operationsService,
     ) {
-        parent::__construct('portfolio:show');
+        parent::__construct();
     }
 
     #[Override]
     protected function configure(): void
     {
-        $this->setDescription('Show portfolio with optional ticker filter')
-            ->addOption('ticker', 't', InputOption::VALUE_OPTIONAL, 'Filter by ticker');
+        $this->addOption('ticker', 't', InputOption::VALUE_OPTIONAL, 'Filter by ticker');
     }
 
     #[Override]
