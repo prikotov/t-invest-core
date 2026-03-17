@@ -1,6 +1,6 @@
 # T-Invest Skill
 
-PHP console application for T-Bank Invest API integration.
+PHP console application for T-Invest API integration.
 
 ## Installation
 

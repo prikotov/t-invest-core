@@ -1,6 +1,6 @@
 {
     "name": "t-invest/skill",
-    "description": "PHP console application for T-Bank Invest API integration",
+    "description": "PHP console application for T-Invest API integration",
     "type": "library",
     "license": "MIT",
     "keywords": ["tbank", "t-bank", "invest", "api", "cli", "console", "trading", "portfolio"],
