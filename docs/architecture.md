@@ -93,7 +93,7 @@
    ┌────────────────────────────────────────────────────────────────────────┐
    │                                                                         │
    │   PortfolioAnalysisService                                             │
-   │   ├── calculateAllocation() ────► Секторное/валютное распределение     │
+    │   ├── calculateAllocation() ────► Секторное распределение              │
    │   ├── calculateReturns() ───────► Доходность (общая, годовая)          │
    │   ├── calculateRisk() ──────────► Волатильность, Sharpe, MaxDD         │
    │   └── calculateDeviations() ────► Отклонения от цели                    │
@@ -220,14 +220,6 @@ target_allocation:
       max: 25
     technology:
       max: 20
-
-  by_currency:
-    RUB:
-      min: 50
-      max: 80
-    USD:
-      min: 10
-      max: 30
 
   positions:
     - ticker: SBER

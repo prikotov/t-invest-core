@@ -386,7 +386,6 @@ final class PortfolioMetricsDto
         public readonly float $hhi,
         public readonly int $effectiveAssets,
         public readonly array $sectorAllocation,
-        public readonly array $currencyAllocation,
     ) {}
 }
 ```
