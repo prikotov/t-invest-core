@@ -61,6 +61,10 @@ services:
     TInvest\Skill\Component\TInvest\InstrumentsService\Mapper\GetInstrumentByResponseMapper:
         arguments:
             $quantityFactory: '@TInvest\Skill\Component\TInvest\Shared\Factory\QuantityFactory'
+    TInvest\Skill\Component\TInvest\InstrumentsService\Mapper\FindInstrumentRequestMapper: ~
+    TInvest\Skill\Component\TInvest\InstrumentsService\Mapper\FindInstrumentResponseMapper: ~
+    TInvest\Skill\Component\TInvest\InstrumentsService\Mapper\GetAssetFundamentalsRequestMapper: ~
+    TInvest\Skill\Component\TInvest\InstrumentsService\Mapper\GetAssetFundamentalsResponseMapper: ~
 
     TInvest\Skill\Component\TInvest\OrdersService\Mapper\PostOrderRequestMapper: ~
     TInvest\Skill\Component\TInvest\OrdersService\Mapper\PostOrderResponseMapper:

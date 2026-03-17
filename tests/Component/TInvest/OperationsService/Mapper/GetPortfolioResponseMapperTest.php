@@ -82,6 +82,7 @@ final class GetPortfolioResponseMapperTest extends TestCase
                     'instrumentUid' => 'inst-1',
                     'varMargin' => ['currency' => 'RUB', 'units' => '0', 'nano' => 0],
                     'expectedYieldFifo' => ['units' => '5', 'nano' => 0],
+                    'ticker' => 'SBER',
                 ],
             ],
             'expectedYield' => ['units' => '0', 'nano' => 0],
