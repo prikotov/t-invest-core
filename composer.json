@@ -1,13 +1,13 @@
 {
     "name": "t-invest/skill",
-    "description": "Console application skill",
+    "description": "PHP console application for Tinkoff Invest API integration",
     "type": "library",
     "license": "MIT",
-    "keywords": ["cli", "console", "skill"],
+    "keywords": ["tinkoff", "invest", "api", "cli", "console", "trading", "portfolio"],
     "authors": [
         {
-            "name": "Your Name",
-            "email": "your@email.com"
+            "name": "Dmitry Prikotov",
+            "email": "prikotov@gmail.com"
         }
     ],
     "minimum-stability": "stable",
