@@ -9,7 +9,15 @@ use GuzzleHttp\Client;
 use Override;
 use Psr\Log\LoggerInterface;
 use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\DividendDto;
+use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\FindInstrumentRequestDto;
+use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\FindInstrumentResponseDto;
+use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\GetAssetFundamentalsRequestDto;
+use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\GetAssetFundamentalsResponseDto;
 use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\InstrumentDto;
+use TInvest\Skill\Component\TInvest\InstrumentsService\Mapper\FindInstrumentRequestMapper;
+use TInvest\Skill\Component\TInvest\InstrumentsService\Mapper\FindInstrumentResponseMapper;
+use TInvest\Skill\Component\TInvest\InstrumentsService\Mapper\GetAssetFundamentalsRequestMapper;
+use TInvest\Skill\Component\TInvest\InstrumentsService\Mapper\GetAssetFundamentalsResponseMapper;
 use TInvest\Skill\Component\TInvest\InstrumentsService\Mapper\GetDividendsRequestMapper;
 use TInvest\Skill\Component\TInvest\InstrumentsService\Mapper\GetDividendsResponseMapper;
 use TInvest\Skill\Component\TInvest\InstrumentsService\Mapper\GetInstrumentByResponseMapper;
@@ -25,6 +33,10 @@ final class InstrumentsServiceComponent implements InstrumentsServiceComponentIn
         private readonly GetDividendsRequestMapper $getDividendsRequestMapper,
         private readonly GetInstrumentByResponseMapper $getInstrumentByResponseMapper,
         private readonly GetDividendsResponseMapper $getDividendsResponseMapper,
+        private readonly FindInstrumentRequestMapper $findInstrumentRequestMapper,
+        private readonly FindInstrumentResponseMapper $findInstrumentResponseMapper,
+        private readonly GetAssetFundamentalsRequestMapper $getAssetFundamentalsRequestMapper,
+        private readonly GetAssetFundamentalsResponseMapper $getAssetFundamentalsResponseMapper,
     ) {
     }
 
@@ -42,7 +54,7 @@ final class InstrumentsServiceComponent implements InstrumentsServiceComponentIn
     }
 
     #[Override]
-    public function getInstrumentBy(string $id, int $idType, ?string $classCode = null): InstrumentDto
+    public function getInstrumentBy(string $id, string $idType, ?string $classCode = null): InstrumentDto
     {
         $res = $this->client->post(
             $this->getUrl('tinkoff.public.invest.api.contract.v1.InstrumentsService/GetInstrumentBy'),
@@ -90,5 +102,57 @@ final class InstrumentsServiceComponent implements InstrumentsServiceComponentIn
         }
 
         yield from $this->getDividendsResponseMapper->map($data);
+    }
+
+    #[Override]
+    public function findInstrument(FindInstrumentRequestDto $request): FindInstrumentResponseDto
+    {
+        $body = $this->findInstrumentRequestMapper->map($request);
+        $this->logger->debug("Find instrument: {request}", [
+            'request' => $body,
+        ]);
+
+        $res = $this->client->post(
+            $this->getUrl('tinkoff.public.invest.api.contract.v1.InstrumentsService/FindInstrument'),
+            [
+                'headers' => $this->getHeaders(),
+                'body' => $body,
+            ]
+        );
+
+        $data = (string)$res->getBody();
+
+        $encoded = json_encode(json_decode($data));
+        if ($encoded !== false) {
+            $this->logger->debug($encoded);
+        }
+
+        return $this->findInstrumentResponseMapper->map($data);
+    }
+
+    #[Override]
+    public function getAssetFundamentals(GetAssetFundamentalsRequestDto $request): GetAssetFundamentalsResponseDto
+    {
+        $body = $this->getAssetFundamentalsRequestMapper->map($request);
+        $this->logger->debug("Get asset fundamentals: {request}", [
+            'request' => $body,
+        ]);
+
+        $res = $this->client->post(
+            $this->getUrl('tinkoff.public.invest.api.contract.v1.InstrumentsService/GetAssetFundamentals'),
+            [
+                'headers' => $this->getHeaders(),
+                'body' => $body,
+            ]
+        );
+
+        $data = (string)$res->getBody();
+
+        $encoded = json_encode(json_decode($data));
+        if ($encoded !== false) {
+            $this->logger->debug($encoded);
+        }
+
+        return $this->getAssetFundamentalsResponseMapper->map($data);
     }
 }

@@ -48,6 +48,7 @@ final class GetPortfolioResponseMapper
                 $position['instrumentUid'],
                 $this->moneyFactory->create($position['varMargin']),
                 $this->quotationFactory->create($position['expectedYieldFifo']),
+                $position['ticker'],
             );
         }
 

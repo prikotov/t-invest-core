@@ -27,6 +27,7 @@ final class PortfolioPositionDto
         public readonly string $instrumentUid,
         public readonly MoneyDto $varMargin,
         public readonly QuotationDto $expectedYieldFifo,
+        public readonly string $ticker,
     ) {
     }
 }

@@ -44,6 +44,7 @@ final class InstrumentDto
         public readonly string $instrumentKind,
         public readonly ?DateTimeImmutable $first1minCandleDate,
         public readonly ?DateTimeImmutable $first1dayCandleDate,
+        public readonly string $assetUid,
     ) {
     }
 }
