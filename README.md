@@ -1,6 +1,6 @@
 # T-Invest Skill
 
-Console application skill.
+PHP console application for T-Bank Invest API integration.
 
 ## Installation
 
@@ -11,12 +11,15 @@ composer require t-invest/skill
 ## Usage
 
 ```bash
-skill [options] [command]
+./bin/skill
+./bin/skill portfolio:positions
+./bin/skill --help
 ```
 
 ## Available Commands
 
 - `main` - Main command
+- `portfolio:positions` - Get portfolio positions
 - `help` - Display help
 
 ## Development
@@ -26,6 +29,7 @@ composer install
 composer test
 composer cs-check
 composer stan
+composer psalm
 ```
 
 ## License

@@ -1,9 +1,9 @@
 {
     "name": "t-invest/skill",
-    "description": "PHP console application for Tinkoff Invest API integration",
+    "description": "PHP console application for T-Bank Invest API integration",
     "type": "library",
     "license": "MIT",
-    "keywords": ["tinkoff", "invest", "api", "cli", "console", "trading", "portfolio"],
+    "keywords": ["tbank", "t-bank", "invest", "api", "cli", "console", "trading", "portfolio"],
     "authors": [
         {
             "name": "Dmitry Prikotov",
