@@ -1,0 +1,75 @@
+parameters:
+    tinvest.token: '%env(TINVEST_TOKEN)%'
+    tinvest.account_id: '%env(TINVEST_ACCOUNT_ID)%'
+    tinvest.base_url: '%env(TINVEST_BASE_URL)%'
+    log.level: '%env(LOG_LEVEL)%'
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: true
+        bind:
+            string $token: '%tinvest.token%'
+            string $accountId: '%tinvest.account_id%'
+            string $baseUrl: '%tinvest.base_url%'
+
+    TInvest\Skill\:
+        resource: '../src/*'
+        exclude:
+            - '../src/Component/TInvest/Shared/Dto/*'
+            - '../src/Component/TInvest/*/Dto/*'
+            - '../src/Component/TInvest/*/Enum/*'
+            - '../src/Component/TInvest/*/Request/*'
+            - '../src/Service/*/Dto/*'
+
+    GuzzleHttp\Client:
+        class: GuzzleHttp\Client
+
+    Psr\Log\LoggerInterface:
+        class: Monolog\Logger
+        arguments:
+            $name: 't-invest'
+        calls:
+            - pushHandler: ['@Monolog\Handler\StreamHandler']
+
+    Monolog\Handler\StreamHandler:
+        class: Monolog\Handler\StreamHandler
+        arguments:
+            $stream: 'php://stdout'
+            $level: '%log.level%'
+
+    TInvest\Skill\Component\TInvest\Shared\Factory\MoneyFactory: ~
+    TInvest\Skill\Component\TInvest\Shared\Factory\QuantityFactory: ~
+    TInvest\Skill\Component\TInvest\Shared\Factory\PercentFactory: ~
+    TInvest\Skill\Component\TInvest\Shared\Factory\QuotationFactory: ~
+
+    TInvest\Skill\Component\TInvest\UsersService\Mapper\GetAccountsResponseMapper: ~
+    
+    TInvest\Skill\Component\TInvest\OperationsService\Mapper\GetPortfolioResponseMapper:
+        arguments:
+            $moneyFactory: '@TInvest\Skill\Component\TInvest\Shared\Factory\MoneyFactory'
+            $percentFactory: '@TInvest\Skill\Component\TInvest\Shared\Factory\PercentFactory'
+            $quantityFactory: '@TInvest\Skill\Component\TInvest\Shared\Factory\QuantityFactory'
+            $quotationFactory: '@TInvest\Skill\Component\TInvest\Shared\Factory\QuotationFactory'
+
+    TInvest\Skill\Component\TInvest\InstrumentsService\Mapper\GetDividendsRequestMapper: ~
+    TInvest\Skill\Component\TInvest\InstrumentsService\Mapper\GetDividendsResponseMapper:
+        arguments:
+            $moneyFactory: '@TInvest\Skill\Component\TInvest\Shared\Factory\MoneyFactory'
+            $quotationFactory: '@TInvest\Skill\Component\TInvest\Shared\Factory\QuotationFactory'
+    TInvest\Skill\Component\TInvest\InstrumentsService\Mapper\GetInstrumentByResponseMapper:
+        arguments:
+            $quantityFactory: '@TInvest\Skill\Component\TInvest\Shared\Factory\QuantityFactory'
+
+    TInvest\Skill\Component\TInvest\OrdersService\Mapper\PostOrderRequestMapper: ~
+    TInvest\Skill\Component\TInvest\OrdersService\Mapper\PostOrderResponseMapper:
+        arguments:
+            $moneyFactory: '@TInvest\Skill\Component\TInvest\Shared\Factory\MoneyFactory'
+            $quotationFactory: '@TInvest\Skill\Component\TInvest\Shared\Factory\QuotationFactory'
+    TInvest\Skill\Component\TInvest\OrdersService\Mapper\OrderStateResponseMapper:
+        arguments:
+            $moneyFactory: '@TInvest\Skill\Component\TInvest\Shared\Factory\MoneyFactory'
+    TInvest\Skill\Component\TInvest\OrdersService\Mapper\GetOrdersResponseMapper:
+        arguments:
+            $orderStateResponseMapper: '@TInvest\Skill\Component\TInvest\OrdersService\Mapper\OrderStateResponseMapper'

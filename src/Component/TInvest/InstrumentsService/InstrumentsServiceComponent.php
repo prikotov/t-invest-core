@@ -1,0 +1,94 @@
+<?php
+
+declare(strict_types=1);
+
+namespace TInvest\Skill\Component\TInvest\InstrumentsService;
+
+use Generator;
+use GuzzleHttp\Client;
+use Override;
+use Psr\Log\LoggerInterface;
+use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\DividendDto;
+use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\InstrumentDto;
+use TInvest\Skill\Component\TInvest\InstrumentsService\Mapper\GetDividendsRequestMapper;
+use TInvest\Skill\Component\TInvest\InstrumentsService\Mapper\GetDividendsResponseMapper;
+use TInvest\Skill\Component\TInvest\InstrumentsService\Mapper\GetInstrumentByResponseMapper;
+use TInvest\Skill\Component\TInvest\InstrumentsService\Request\GetDividendsRequestDto;
+
+final class InstrumentsServiceComponent implements InstrumentsServiceComponentInterface
+{
+    public function __construct(
+        private readonly string $token,
+        private readonly string $baseUrl,
+        private readonly Client $client,
+        private readonly LoggerInterface $logger,
+        private readonly GetDividendsRequestMapper $getDividendsRequestMapper,
+        private readonly GetInstrumentByResponseMapper $getInstrumentByResponseMapper,
+        private readonly GetDividendsResponseMapper $getDividendsResponseMapper,
+    ) {
+    }
+
+    private function getUrl(string $endpoint): string
+    {
+        return $this->baseUrl . $endpoint;
+    }
+
+    private function getHeaders(array $headers = []): array
+    {
+        return array_merge([
+            'Authorization' => 'Bearer ' . $this->token,
+            'Content-Type' => 'application/json',
+        ], $headers);
+    }
+
+    #[Override]
+    public function getInstrumentBy(string $id, int $idType, ?string $classCode = null): InstrumentDto
+    {
+        $res = $this->client->post(
+            $this->getUrl('tinkoff.public.invest.api.contract.v1.InstrumentsService/GetInstrumentBy'),
+            [
+                'headers' => $this->getHeaders(),
+                'body' => json_encode([
+                    'idType' => $idType,
+                    'id' => $id,
+                    'classCode' => $classCode,
+                ]),
+            ]
+        );
+
+        $data = (string)$res->getBody();
+
+        $encoded = json_encode(json_decode($data));
+        if ($encoded !== false) {
+            $this->logger->debug($encoded);
+        }
+
+        return $this->getInstrumentByResponseMapper->map($data);
+    }
+
+    #[Override]
+    public function getDividends(GetDividendsRequestDto $dividendsRequestDto): Generator
+    {
+        $body = $this->getDividendsRequestMapper->map($dividendsRequestDto);
+        $this->logger->debug("Get dividends: {request}", [
+            'request' => $body,
+        ]);
+
+        $res = $this->client->post(
+            $this->getUrl('tinkoff.public.invest.api.contract.v1.InstrumentsService/GetDividends'),
+            [
+                'headers' => $this->getHeaders(),
+                'body' => $body,
+            ]
+        );
+
+        $data = (string)$res->getBody();
+
+        $encoded = json_encode(json_decode($data));
+        if ($encoded !== false) {
+            $this->logger->debug($encoded);
+        }
+
+        yield from $this->getDividendsResponseMapper->map($data);
+    }
+}
