@@ -22,6 +22,8 @@ T-Invest Skill - PHP console application for Tinkoff Invest API integration.
 │   └── services.yaml            # Service definitions
 ├── src/
 │   ├── Command/                 # Console commands
+│   ├── Service/                 # Business logic layer
+│   │   └── Portfolio/           # Portfolio service group
 │   └── Component/TInvest/       # API components
 │       ├── Shared/              # Shared DTOs, Factories, Helpers
 │       ├── UsersService/        # Users API
@@ -43,8 +45,6 @@ composer install
 ### Run tests
 ```bash
 composer test
-# or
-./vendor/bin/phpunit
 ```
 
 ### Code style
@@ -55,29 +55,38 @@ composer cs-fix      # Fix PSR-12 violations
 
 ### Static analysis
 ```bash
-composer stan
-# or
-./vendor/bin/phpstan analyse
-
-composer psalm
-# or
-./vendor/bin/psalm
+composer stan        # PHPStan
+composer psalm       # Psalm
 ```
 
 ### Run application
 ```bash
 ./bin/skill
-./bin/skill main
+./bin/skill portfolio:positions
 ./bin/skill --help
 ```
 
 ## Architecture Patterns
 
-### Service Components
+### Three-Layer Architecture
+
+1. **Command** - Console commands, only output formatting
+2. **Service** - Business logic, data preparation for commands
+3. **Component** - Raw API calls, DTOs from API responses
+
+### Service Layer
+```
+src/Service/{Group}/
+├── Dto/                          # View DTOs for commands
+├── {Group}ServiceInterface.php   # Interface
+└── {Group}Service.php            # Implementation
+```
+
+### API Components
 Each API service follows this structure:
-- `*ServiceComponentInterface.php` - Interface
+- `*ServiceComponentInterface.php` - Interface (one method per API endpoint)
 - `*ServiceComponent.php` - Implementation
-- `Dto/` - Data Transfer Objects
+- `Dto/` - API response DTOs
 - `Mapper/` - Response mappers (JSON → DTO)
 - `Request/` - Request DTOs (optional)
 - `Enum/` - Enums (optional)
@@ -86,12 +95,7 @@ Each API service follows this structure:
 - All services registered in `config/services.yaml`
 - Autowiring enabled
 - Parameters bound via `$token`, `$accountId`, `$baseUrl`
-
-### Naming Conventions
-- PSR-4 autoloading: `TInvest\Skill\*`
-- DTOs: `*Dto.php` (in Dto/ folder)
-- Mappers: `*Mapper.php` (in Mapper/ folder)
-- Components: `*Component.php`
+- DTOs excluded from autowiring
 
 ## Environment Variables
 
@@ -99,9 +103,15 @@ Required in `.env` or `.env.local`:
 ```
 TINVEST_TOKEN=your-api-token
 TINVEST_ACCOUNT_ID=your-account-id
-TINVEST_BASE_URL=https://invest-public-api.tinkoff.ru/
+TINVEST_BASE_URL=https://invest-public-api.tbank.ru/rest/
 LOG_LEVEL=debug
 ```
+
+## API Details
+
+- Base URL: `https://invest-public-api.tbank.ru/rest/`
+- Content-Type: `application/json`
+- REST API (not gRPC)
 
 ## When Making Changes
 
@@ -110,6 +120,11 @@ LOG_LEVEL=debug
 2. Create Interface, Component, DTOs, Mappers
 3. Register in `config/services.yaml`
 4. Add unit tests in `tests/Component/TInvest/*/Mapper/`
+
+### Adding new console command
+1. Create service in `src/Service/{Group}/`
+2. Create command in `src/Command/`
+3. Register command in `bin/skill`
 
 ### Before committing
 1. Run `composer cs-check` - fix violations
@@ -125,7 +140,7 @@ LOG_LEVEL=debug
 
 ## API Reference
 
-Services map to Tinkoff Invest API gRPC endpoints:
+Services map to Tinkoff Invest API endpoints:
 - `UsersService` → `tinkoff.public.invest.api.contract.v1.UsersService`
 - `OperationsService` → `tinkoff.public.invest.api.contract.v1.OperationsService`
 - `InstrumentsService` → `tinkoff.public.invest.api.contract.v1.InstrumentsService`
