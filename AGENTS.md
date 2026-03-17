@@ -97,22 +97,6 @@ src/Service/{Group}/
 - Параметры привязываются через `$token`, `$accountId`, `$baseUrl`
 - DTO исключены из autowiring
 
-## Переменные окружения
-
-Требуются в `.env` или `.env.local`:
-```
-TINVEST_TOKEN=ваш-api-токен
-TINVEST_ACCOUNT_ID=id-счёта
-TINVEST_BASE_URL=https://invest-public-api.tbank.ru/rest/
-LOG_LEVEL=debug
-```
-
-## Детали API
-
-- Base URL: `https://invest-public-api.tbank.ru/rest/`
-- Content-Type: `application/json`
-- REST API (не gRPC)
-
 ## При внесении изменений
 
 ### Добавление нового API-сервиса
