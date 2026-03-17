@@ -7,8 +7,11 @@ namespace TInvest\Skill\Component\TInvest\OperationsService;
 use GuzzleHttp\Client;
 use Override;
 use Psr\Log\LoggerInterface;
+use TInvest\Skill\Component\TInvest\OperationsService\Dto\GetOperationsRequestDto;
+use TInvest\Skill\Component\TInvest\OperationsService\Dto\GetOperationsResponseDto;
 use TInvest\Skill\Component\TInvest\OperationsService\Dto\PortfolioDto;
 use TInvest\Skill\Component\TInvest\OperationsService\Mapper\GetPortfolioResponseMapper;
+use TInvest\Skill\Component\TInvest\OperationsService\Mapper\OperationMapper;
 
 final class OperationsServiceComponent implements OperationsServiceComponentInterface
 {
@@ -19,6 +22,7 @@ final class OperationsServiceComponent implements OperationsServiceComponentInte
         private readonly Client $client,
         private readonly LoggerInterface $logger,
         private readonly GetPortfolioResponseMapper $getPortfolioResponseMapper,
+        private readonly OperationMapper $operationMapper,
     ) {
     }
 
@@ -62,5 +66,46 @@ final class OperationsServiceComponent implements OperationsServiceComponentInte
         $decoded = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
 
         return $this->getPortfolioResponseMapper->map($decoded);
+    }
+
+    #[Override]
+    public function getOperations(GetOperationsRequestDto $request): GetOperationsResponseDto
+    {
+        $body = [
+            'accountId' => $this->accountId,
+            'from' => $request->from->format('c'),
+            'to' => $request->to->format('c'),
+        ];
+
+        if ($request->state !== null) {
+            $body['state'] = $request->state->value;
+        }
+
+        if ($request->figi !== null) {
+            $body['figi'] = $request->figi;
+        }
+
+        $res = $this->client->post(
+            $this->getUrl('tinkoff.public.invest.api.contract.v1.OperationsService/GetOperations'),
+            [
+                'headers' => $this->getHeaders(),
+                'body' => json_encode($body),
+            ]
+        );
+
+        $data = (string)$res->getBody();
+        $encoded = json_encode(json_decode($data));
+        if ($encoded !== false) {
+            $this->logger->debug($encoded);
+        }
+
+        if (empty($data)) {
+            return $this->operationMapper->map([]);
+        }
+
+        /** @var array<string, mixed> */
+        $decoded = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
+
+        return $this->operationMapper->map($decoded);
     }
 }
