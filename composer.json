@@ -3,7 +3,7 @@
     "description": "PHP console application for T-Invest API integration",
     "type": "library",
     "license": "MIT",
-    "keywords": ["tbank", "t-bank", "invest", "api", "cli", "console", "trading", "portfolio"],
+    "keywords": ["t-invest", "tbank", "t-bank", "invest", "api", "cli", "console", "trading", "portfolio", "stocks", "bonds"],
     "authors": [
         {
             "name": "Dmitry Prikotov",
