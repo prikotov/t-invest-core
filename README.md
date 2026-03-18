@@ -1,28 +1,36 @@
-# T-Invest Skill
+# T-Invest CLI
 
-PHP console application for T-Invest API integration.
+CLI утилита для работы с T-Invest API (Т-Инвестиции).
 
-## Installation
-
-```bash
-composer require t-invest/skill
-```
-
-## Usage
+## Установка
 
 ```bash
-./bin/skill
-./bin/skill portfolio:positions
-./bin/skill --help
+composer require prikotov/t-invest-core:@dev
 ```
 
-## Available Commands
+## Конфигурация
 
-- `main` - Main command
-- `portfolio:positions` - Get portfolio positions
-- `help` - Display help
+Создайте `.env.local`:
 
-## Development
+```env
+TINKOFF_TOKEN=your_token
+TINKOFF_ACCOUNT_ID=your_account_id
+```
+
+## Использование
+
+```bash
+./vendor/bin/skill portfolio:positions
+./vendor/bin/skill --help
+```
+
+## Команды
+
+| Команда | Описание |
+|---------|----------|
+| `portfolio:positions` | Позиции портфеля |
+
+## Разработка
 
 ```bash
 composer install
@@ -32,6 +40,10 @@ composer stan
 composer psalm
 ```
 
-## License
+## API Reference
+
+OpenAPI: https://russianinvestments.github.io/investAPI/swagger-ui/openapi.yaml
+
+## Лицензия
 
 MIT
