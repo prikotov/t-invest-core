@@ -1,5 +1,5 @@
 {
-    "name": "t-invest/cli",
+    "name": "prikotov/t-invest-core",
     "description": "CLI tool for T-Invest API - portfolio management and trading",
     "type": "library",
     "license": "MIT",
