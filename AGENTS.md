@@ -14,7 +14,7 @@ CLI утилита для работы с T-Invest API (Т-Инвестиции)
 ## Структура
 
 ```
-├── bin/skill                    # CLI entry point
+├── bin/t-invest                 # CLI entry point
 ├── config/
 │   ├── container.php
 │   └── services.yaml
@@ -33,7 +33,7 @@ CLI утилита для работы с T-Invest API (Т-Инвестиции)
 ## Команды
 
 ```bash
-./bin/skill portfolio:positions
+./bin/t-invest portfolio:positions
 ```
 
 ## Архитектура

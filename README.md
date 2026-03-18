@@ -20,8 +20,8 @@ TINKOFF_ACCOUNT_ID=your_account_id
 ## Использование
 
 ```bash
-./vendor/bin/skill portfolio:positions
-./vendor/bin/skill --help
+./vendor/bin/t-invest portfolio:positions
+./vendor/bin/t-invest --help
 ```
 
 ## Команды

@@ -41,7 +41,7 @@
         "vimeo/psalm": "^5.0|^6.0"
     },
     "bin": [
-        "bin/skill"
+        "bin/t-invest"
     ],
     "config": {
         "sort-packages": true,
