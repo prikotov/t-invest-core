@@ -1,6 +1,6 @@
 {
-    "name": "t-invest/skill",
-    "description": "PHP console application for T-Invest API integration",
+    "name": "t-invest/cli",
+    "description": "CLI tool for T-Invest API - portfolio management and trading",
     "type": "library",
     "license": "MIT",
     "keywords": ["t-invest", "invest", "api", "cli", "console", "trading", "portfolio", "stocks", "bonds"],
