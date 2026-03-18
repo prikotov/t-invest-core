@@ -40,5 +40,5 @@ services:
     Monolog\Handler\StreamHandler:
         class: Monolog\Handler\StreamHandler
         arguments:
-            $stream: 'php://stdout'
+            $stream: '%kernel.project_dir%/var/log/t-invest-core/app.log'
             $level: '%log.level%'
