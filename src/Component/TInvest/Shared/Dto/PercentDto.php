@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace TInvest\Skill\Component\TInvest\Shared\Dto;
 
-final class PercentDto
+final readonly class PercentDto
 {
     public function __construct(
         public readonly float $value,

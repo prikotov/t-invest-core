@@ -7,8 +7,11 @@ namespace TInvest\Skill\Service\Instruments;
 use Override;
 use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\FindInstrumentRequestDto;
 use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\GetAssetFundamentalsRequestDto;
+use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\TradingScheduleRequestDto;
 use TInvest\Skill\Component\TInvest\InstrumentsService\InstrumentsServiceComponentInterface;
 use TInvest\Skill\Service\Instruments\Dto\AssetFundamentalViewDto;
+use TInvest\Skill\Service\Instruments\Dto\TradingDayViewDto;
+use TInvest\Skill\Service\Instruments\Dto\TradingScheduleViewDto;
 
 final class InstrumentsService implements InstrumentsServiceInterface
 {
@@ -43,7 +46,7 @@ final class InstrumentsService implements InstrumentsServiceInterface
     }
 
     #[Override]
-    public function getTickerByAssetUid(string $assetUid): ?string
+    public function getTickerByAssetUid(string $assetUid): string
     {
         $instrument = $this->component->getInstrumentBy($assetUid, 'INSTRUMENT_ID_TYPE_UID');
         return $instrument->ticker;
@@ -94,5 +97,42 @@ final class InstrumentsService implements InstrumentsServiceInterface
         }
 
         return $result;
+    }
+
+    #[Override]
+    public function getTradingSchedule(string $exchange, string $from, int $days = 7): TradingScheduleViewDto
+    {
+        $timestamp = strtotime($from . ' +' . $days . ' days');
+        $to = $timestamp !== false ? date('Y-m-d', $timestamp) : null;
+
+        $request = new TradingScheduleRequestDto(
+            exchange: $exchange,
+            from: $from,
+            to: $to,
+        );
+
+        $schedule = $this->component->getTradingSchedule($request);
+
+        $days = array_map(
+            fn($day) => new TradingDayViewDto(
+                date: $day->date,
+                isTradingDay: $day->isTradingDay,
+                startTime: $day->startTime,
+                endTime: $day->endTime,
+                morningSessionStart: $day->morningSessionStart,
+                morningSessionEnd: $day->morningSessionEnd,
+                eveningSessionStart: $day->eveningSessionStart,
+                eveningSessionEnd: $day->eveningSessionEnd,
+                clearingStart: $day->clearingStart,
+                clearingEnd: $day->clearingEnd,
+                holidayName: $day->holidayName,
+            ),
+            $schedule->days
+        );
+
+        return new TradingScheduleViewDto(
+            exchange: $schedule->exchange,
+            days: array_values($days),
+        );
     }
 }

@@ -7,7 +7,7 @@ namespace TInvest\Skill\Component\TInvest\InstrumentsService\Dto;
 use DateTimeImmutable;
 use TInvest\Skill\Component\TInvest\Shared\Dto\QuantityDto;
 
-final class InstrumentDto
+final readonly class InstrumentDto
 {
     public function __construct(
         public readonly string $figi,

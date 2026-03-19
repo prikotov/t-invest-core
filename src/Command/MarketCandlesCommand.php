@@ -12,9 +12,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use TInvest\Skill\Component\TInvest\MarketDataService\Dto\GetCandlesRequestDto;
-use TInvest\Skill\Component\TInvest\MarketDataService\Enum\CandleIntervalEnum;
-use TInvest\Skill\Component\TInvest\MarketDataService\MarketDataServiceComponentInterface;
+use TInvest\Skill\Service\MarketData\MarketDataServiceInterface;
 
 #[AsCommand(
     name: 'market:candles',
@@ -23,7 +21,7 @@ use TInvest\Skill\Component\TInvest\MarketDataService\MarketDataServiceComponent
 final class MarketCandlesCommand extends Command
 {
     public function __construct(
-        private readonly MarketDataServiceComponentInterface $marketDataService,
+        private readonly MarketDataServiceInterface $marketDataService,
     ) {
         parent::__construct();
     }
@@ -50,12 +48,13 @@ final class MarketCandlesCommand extends Command
 
         $from = new DateTimeImmutable($fromStr);
         $to = new DateTimeImmutable($toStr);
-        $interval = $this->parseInterval($intervalStr);
 
-        $request = new GetCandlesRequestDto($instrumentId, $from, $to, $interval, $limit);
-        $response = $this->marketDataService->getCandles($request);
+        $candles = [];
+        foreach ($this->marketDataService->getCandles($instrumentId, $from, $to, $intervalStr, $limit) as $candle) {
+            $candles[] = $candle;
+        }
 
-        if (empty($response->candles)) {
+        if ($candles === []) {
             $output->writeln('<comment>No candles found</comment>');
             return Command::SUCCESS;
         }
@@ -78,44 +77,21 @@ final class MarketCandlesCommand extends Command
             'Volume'
         ));
 
-        foreach ($response->candles as $candle) {
+        foreach ($candles as $candle) {
             $output->writeln(sprintf(
                 '%-20s %10.2f %10.2f %10.2f %10.2f %12d',
                 $candle->time->format('Y-m-d H:i:s'),
-                $candle->open->value,
-                $candle->high->value,
-                $candle->low->value,
-                $candle->close->value,
+                $candle->open,
+                $candle->high,
+                $candle->low,
+                $candle->close,
                 $candle->volume
             ));
         }
 
         $output->writeln('');
-        $output->writeln(sprintf('<info>Total candles: %d</info>', count($response->candles)));
+        $output->writeln(sprintf('<info>Total candles: %d</info>', count($candles)));
 
         return Command::SUCCESS;
-    }
-
-    private function parseInterval(string $interval): CandleIntervalEnum
-    {
-        return match ($interval) {
-            '5s' => CandleIntervalEnum::FIVE_SEC,
-            '10s' => CandleIntervalEnum::TEN_SEC,
-            '30s' => CandleIntervalEnum::THIRTY_SEC,
-            '1m', '1min' => CandleIntervalEnum::ONE_MIN,
-            '2m', '2min' => CandleIntervalEnum::TWO_MIN,
-            '3m', '3min' => CandleIntervalEnum::THREE_MIN,
-            '5m', '5min' => CandleIntervalEnum::FIVE_MIN,
-            '10m', '10min' => CandleIntervalEnum::TEN_MIN,
-            '15m', '15min' => CandleIntervalEnum::FIFTEEN_MIN,
-            '30m', '30min' => CandleIntervalEnum::THIRTY_MIN,
-            '1h', '1hour' => CandleIntervalEnum::HOUR,
-            '2h', '2hour' => CandleIntervalEnum::TWO_HOUR,
-            '4h', '4hour' => CandleIntervalEnum::FOUR_HOUR,
-            '1d', 'day' => CandleIntervalEnum::DAY,
-            '1w', 'week' => CandleIntervalEnum::WEEK,
-            '1M', 'month' => CandleIntervalEnum::MONTH,
-            default => CandleIntervalEnum::HOUR,
-        };
     }
 }

@@ -10,8 +10,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use TInvest\Skill\Component\TInvest\MarketDataService\Dto\GetLastPricesRequestDto;
-use TInvest\Skill\Component\TInvest\MarketDataService\MarketDataServiceComponentInterface;
+use TInvest\Skill\Service\MarketData\MarketDataServiceInterface;
 
 #[AsCommand(
     name: 'market:prices',
@@ -20,7 +19,7 @@ use TInvest\Skill\Component\TInvest\MarketDataService\MarketDataServiceComponent
 final class MarketPricesCommand extends Command
 {
     public function __construct(
-        private readonly MarketDataServiceComponentInterface $marketDataService,
+        private readonly MarketDataServiceInterface $marketDataService,
     ) {
         parent::__construct();
     }
@@ -42,10 +41,12 @@ final class MarketPricesCommand extends Command
         /** @var array<string> $instrumentIds */
         $instrumentIds = $input->getArgument('instruments');
 
-        $request = new GetLastPricesRequestDto($instrumentIds);
-        $response = $this->marketDataService->getLastPrices($request);
+        $prices = [];
+        foreach ($this->marketDataService->getLastPrices($instrumentIds) as $price) {
+            $prices[] = $price;
+        }
 
-        if (empty($response->lastPrices)) {
+        if ($prices === []) {
             $output->writeln('<comment>No prices found</comment>');
             return Command::SUCCESS;
         }
@@ -61,13 +62,13 @@ final class MarketPricesCommand extends Command
             'Time'
         ));
 
-        foreach ($response->lastPrices as $lastPrice) {
+        foreach ($prices as $lastPrice) {
             $time = $lastPrice->time?->format('Y-m-d H:i:s') ?? 'N/A';
             $output->writeln(sprintf(
                 '%-15s %-10s %15.2f %-20s',
                 $lastPrice->figi,
                 $lastPrice->ticker ?? 'N/A',
-                $lastPrice->price->value,
+                $lastPrice->price,
                 $time
             ));
         }

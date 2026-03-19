@@ -7,7 +7,7 @@ namespace TInvest\Skill\Component\TInvest\OrdersService\Dto;
 use TInvest\Skill\Component\TInvest\Shared\Dto\MoneyDto;
 use TInvest\Skill\Component\TInvest\Shared\Dto\QuotationDto;
 
-final class PostOrderResponseDto
+final readonly class PostOrderResponseDto
 {
     public function __construct(
         public readonly ?string $orderId,

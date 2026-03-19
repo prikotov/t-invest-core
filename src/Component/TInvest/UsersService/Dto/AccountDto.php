@@ -6,7 +6,7 @@ namespace TInvest\Skill\Component\TInvest\UsersService\Dto;
 
 use DateTimeImmutable;
 
-final class AccountDto
+final readonly class AccountDto
 {
     public function __construct(
         public readonly string $id,

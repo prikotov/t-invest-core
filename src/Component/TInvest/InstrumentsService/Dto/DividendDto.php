@@ -8,7 +8,7 @@ use DateTimeImmutable;
 use TInvest\Skill\Component\TInvest\Shared\Dto\MoneyDto;
 use TInvest\Skill\Component\TInvest\Shared\Dto\QuotationDto;
 
-final class DividendDto
+final readonly class DividendDto
 {
     public function __construct(
         public readonly ?MoneyDto $dividendNet,

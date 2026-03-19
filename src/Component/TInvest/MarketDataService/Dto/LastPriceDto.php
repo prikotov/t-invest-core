@@ -7,7 +7,7 @@ namespace TInvest\Skill\Component\TInvest\MarketDataService\Dto;
 use DateTimeImmutable;
 use TInvest\Skill\Component\TInvest\Shared\Dto\QuotationDto;
 
-final class LastPriceDto
+final readonly class LastPriceDto
 {
     public function __construct(
         public readonly string $figi,

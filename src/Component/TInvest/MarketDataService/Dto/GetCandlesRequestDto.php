@@ -7,7 +7,7 @@ namespace TInvest\Skill\Component\TInvest\MarketDataService\Dto;
 use DateTimeImmutable;
 use TInvest\Skill\Component\TInvest\MarketDataService\Enum\CandleIntervalEnum;
 
-final class GetCandlesRequestDto
+final readonly class GetCandlesRequestDto
 {
     public function __construct(
         public readonly string $instrumentId,

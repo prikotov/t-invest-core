@@ -9,7 +9,7 @@ use TInvest\Skill\Component\TInvest\OperationsService\Enum\OperationStateEnum;
 use TInvest\Skill\Component\TInvest\OperationsService\Enum\OperationTypeEnum;
 use TInvest\Skill\Component\TInvest\Shared\Dto\MoneyDto;
 
-final class OperationDto
+final readonly class OperationDto
 {
     public function __construct(
         public readonly string $id,

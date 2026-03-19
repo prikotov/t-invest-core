@@ -6,7 +6,7 @@ namespace TInvest\Skill\Component\TInvest\OrdersService\Dto;
 
 use DateTimeImmutable;
 
-final class CancelOrderResponseDto
+final readonly class CancelOrderResponseDto
 {
     public function __construct(
         public readonly DateTimeImmutable $time

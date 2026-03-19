@@ -8,7 +8,7 @@ use TInvest\Skill\Component\TInvest\Shared\Dto\MoneyDto;
 use TInvest\Skill\Component\TInvest\Shared\Dto\QuantityDto;
 use TInvest\Skill\Component\TInvest\Shared\Dto\QuotationDto;
 
-final class PortfolioPositionDto
+final readonly class PortfolioPositionDto
 {
     public function __construct(
         public readonly string $figi,
