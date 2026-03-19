@@ -85,6 +85,43 @@ GET /v1/instruments/shares
 
 ---
 
+### 3.2 Торговый календарь ✅
+```
+GET /v1/instruments/trading/schedules
+```
+
+**Параметры:**
+- `exchange` (optional) - биржа (MOEX)
+- `from`, `to` (optional) - период
+
+**Возвращает:**
+- `is_trading_day` - торговый день или выходной
+- `start_time`, `end_time` - часы торгов
+- `morning_trading`, `evening_trading` - аукционы
+- `clearing` - время клиринга
+
+**Задачи:**
+- [x] `TradingScheduleDto.php`
+- [x] `TradingDayDto.php`
+- [x] `TradingScheduleRequestDto.php`
+- [x] `Mapper/TradingScheduleMapper.php`
+- [x] `Mapper/TradingScheduleRequestMapper.php`
+- [x] Добавить `getTradingSchedule()` в интерфейс InstrumentsService
+- [x] Команда `schedule [--exchange=MOEX] [--date=YYYY-MM-DD]`
+- [ ] Тесты
+
+**Пример:**
+```bash
+./bin/skill schedule --exchange=MOEX --date=2024-03-18
+# MOEX: Торговый день
+# Основная сессия: 10:00-18:40
+# Аукцион открытия: 09:50-10:00
+# Аукцион закрытия: 18:40-18:50
+# Клиринг: 18:50-19:00
+```
+
+---
+
 ## Структура директорий
 
 ```

@@ -11,6 +11,8 @@ use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\FindInstrumentRespons
 use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\GetAssetFundamentalsRequestDto;
 use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\GetAssetFundamentalsResponseDto;
 use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\InstrumentDto;
+use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\TradingScheduleDto;
+use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\TradingScheduleRequestDto;
 use TInvest\Skill\Component\TInvest\InstrumentsService\Request\GetDividendsRequestDto;
 
 interface InstrumentsServiceComponentInterface
@@ -22,4 +24,6 @@ interface InstrumentsServiceComponentInterface
     public function findInstrument(FindInstrumentRequestDto $request): FindInstrumentResponseDto;
 
     public function getAssetFundamentals(GetAssetFundamentalsRequestDto $request): GetAssetFundamentalsResponseDto;
+
+    public function getTradingSchedule(TradingScheduleRequestDto $request): TradingScheduleDto;
 }
