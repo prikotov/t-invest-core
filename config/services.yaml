@@ -14,7 +14,7 @@ services:
             string $accountId: '%tinvest.account_id%'
             string $baseUrl: '%tinvest.base_url%'
 
-    TInvest\Skill\:
+    TInvest\Core\:
         resource: '../src/*'
         exclude:
             - '../src/Component/TInvest/Shared/Dto/*'
@@ -23,7 +23,7 @@ services:
             - '../src/Component/TInvest/*/Request/*'
             - '../src/Service/*/Dto/*'
 
-    TInvest\Skill\Command\:
+    TInvest\Core\Command\:
         resource: '../src/Command/*'
         tags: ['console.command']
 

@@ -9,10 +9,13 @@ use Generator;
 use Override;
 use TInvest\Core\Component\TInvest\MarketDataService\Dto\GetCandlesRequestDto;
 use TInvest\Core\Component\TInvest\MarketDataService\Dto\GetLastPricesRequestDto;
+use TInvest\Core\Component\TInvest\MarketDataService\Dto\GetOrderBookRequestDto;
 use TInvest\Core\Component\TInvest\MarketDataService\Enum\CandleIntervalEnum;
 use TInvest\Core\Component\TInvest\MarketDataService\MarketDataServiceComponentInterface;
 use TInvest\Core\Service\MarketData\Dto\CandleViewDto;
 use TInvest\Core\Service\MarketData\Dto\LastPriceViewDto;
+use TInvest\Core\Service\MarketData\Dto\OrderBookViewDto;
+use TInvest\Core\Service\MarketData\Dto\OrderViewDto;
 
 final class MarketDataService implements MarketDataServiceInterface
 {
@@ -83,5 +86,33 @@ final class MarketDataService implements MarketDataServiceInterface
             '1M', 'month' => CandleIntervalEnum::MONTH,
             default => CandleIntervalEnum::HOUR,
         };
+    }
+
+    #[Override]
+    public function getOrderBook(string $instrumentId, int $depth = 20): OrderBookViewDto
+    {
+        $request = new GetOrderBookRequestDto($instrumentId, $depth);
+        $response = $this->component->getOrderBook($request);
+
+        $bids = array_map(
+            fn($order) => new OrderViewDto($order->price, $order->quantity),
+            $response->bids
+        );
+
+        $asks = array_map(
+            fn($order) => new OrderViewDto($order->price, $order->quantity),
+            $response->asks
+        );
+
+        return new OrderBookViewDto(
+            figi: $response->figi,
+            depth: $response->depth,
+            bids: $bids,
+            asks: $asks,
+            time: $response->time,
+            instrumentUid: $response->instrumentUid,
+            limitUp: $response->limitUp,
+            limitDown: $response->limitDown,
+        );
     }
 }

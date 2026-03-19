@@ -8,6 +8,7 @@ use DateTimeImmutable;
 use Generator;
 use TInvest\Core\Service\MarketData\Dto\CandleViewDto;
 use TInvest\Core\Service\MarketData\Dto\LastPriceViewDto;
+use TInvest\Core\Service\MarketData\Dto\OrderBookViewDto;
 
 interface MarketDataServiceInterface
 {
@@ -24,4 +25,6 @@ interface MarketDataServiceInterface
      * @return Generator<LastPriceViewDto>
      */
     public function getLastPrices(array $instrumentIds): Generator;
+
+    public function getOrderBook(string $instrumentId, int $depth = 20): OrderBookViewDto;
 }

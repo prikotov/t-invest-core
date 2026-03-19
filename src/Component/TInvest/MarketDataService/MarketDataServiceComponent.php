@@ -11,8 +11,11 @@ use TInvest\Core\Component\TInvest\MarketDataService\Dto\GetCandlesRequestDto;
 use TInvest\Core\Component\TInvest\MarketDataService\Dto\GetCandlesResponseDto;
 use TInvest\Core\Component\TInvest\MarketDataService\Dto\GetLastPricesRequestDto;
 use TInvest\Core\Component\TInvest\MarketDataService\Dto\GetLastPricesResponseDto;
+use TInvest\Core\Component\TInvest\MarketDataService\Dto\GetOrderBookRequestDto;
+use TInvest\Core\Component\TInvest\MarketDataService\Dto\GetOrderBookResponseDto;
 use TInvest\Core\Component\TInvest\MarketDataService\Mapper\CandleMapper;
 use TInvest\Core\Component\TInvest\MarketDataService\Mapper\LastPriceMapper;
+use TInvest\Core\Component\TInvest\MarketDataService\Mapper\OrderBookMapper;
 
 final class MarketDataServiceComponent implements MarketDataServiceComponentInterface
 {
@@ -23,6 +26,7 @@ final class MarketDataServiceComponent implements MarketDataServiceComponentInte
         private readonly LoggerInterface $logger,
         private readonly CandleMapper $candleMapper,
         private readonly LastPriceMapper $lastPriceMapper,
+        private readonly OrderBookMapper $orderBookMapper,
     ) {
     }
 
@@ -104,5 +108,35 @@ final class MarketDataServiceComponent implements MarketDataServiceComponentInte
         $decoded = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
 
         return $this->lastPriceMapper->map($decoded);
+    }
+
+    #[Override]
+    public function getOrderBook(GetOrderBookRequestDto $request): GetOrderBookResponseDto
+    {
+        $res = $this->client->post(
+            $this->getUrl('tinkoff.public.invest.api.contract.v1.MarketDataService/GetOrderBook'),
+            [
+                'headers' => $this->getHeaders(),
+                'body' => json_encode([
+                    'instrumentId' => $request->instrumentId,
+                    'depth' => $request->depth,
+                ]),
+            ]
+        );
+
+        $data = (string)$res->getBody();
+        $encoded = json_encode(json_decode($data));
+        if ($encoded !== false) {
+            $this->logger->debug($encoded);
+        }
+
+        if (empty($data)) {
+            return $this->orderBookMapper->map([]);
+        }
+
+        /** @var array<string, mixed> */
+        $decoded = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
+
+        return $this->orderBookMapper->map($decoded);
     }
 }
