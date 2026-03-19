@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace TInvest\Skill\Component\TInvest\MarketDataService\Dto;
 
-final class GetLastPricesRequestDto
+final readonly class GetLastPricesRequestDto
 {
     /**
      * @param array<string> $instrumentIds

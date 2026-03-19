@@ -7,7 +7,7 @@ namespace TInvest\Skill\Component\TInvest\MarketDataService\Dto;
 use DateTimeImmutable;
 use TInvest\Skill\Component\TInvest\Shared\Dto\QuotationDto;
 
-final class CandleDto
+final readonly class CandleDto
 {
     public function __construct(
         public readonly QuotationDto $open,

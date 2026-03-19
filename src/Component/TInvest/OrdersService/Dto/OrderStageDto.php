@@ -6,7 +6,7 @@ namespace TInvest\Skill\Component\TInvest\OrdersService\Dto;
 
 use TInvest\Skill\Component\TInvest\Shared\Dto\MoneyDto;
 
-final class OrderStageDto
+final readonly class OrderStageDto
 {
     public function __construct(
         public readonly ?MoneyDto $price,

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace TInvest\Skill\Component\TInvest\Shared\Dto;
 
-final class MoneyDto
+final readonly class MoneyDto
 {
     public function __construct(
         public readonly string $currency,

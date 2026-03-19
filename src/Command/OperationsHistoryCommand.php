@@ -11,9 +11,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use TInvest\Skill\Component\TInvest\OperationsService\Dto\GetOperationsRequestDto;
-use TInvest\Skill\Component\TInvest\OperationsService\Enum\OperationStateEnum;
-use TInvest\Skill\Component\TInvest\OperationsService\OperationsServiceComponentInterface;
+use TInvest\Skill\Service\Operations\OperationsServiceInterface;
 
 #[AsCommand(
     name: 'operations:history',
@@ -22,7 +20,7 @@ use TInvest\Skill\Component\TInvest\OperationsService\OperationsServiceComponent
 final class OperationsHistoryCommand extends Command
 {
     public function __construct(
-        private readonly OperationsServiceComponentInterface $operationsService,
+        private readonly OperationsServiceInterface $operationsService,
     ) {
         parent::__construct();
     }
@@ -47,12 +45,13 @@ final class OperationsHistoryCommand extends Command
 
         $from = new DateTimeImmutable($fromStr);
         $to = new DateTimeImmutable($toStr);
-        $state = $this->parseState($stateStr);
 
-        $request = new GetOperationsRequestDto($from, $to, $state, $figi);
-        $response = $this->operationsService->getOperations($request);
+        $operations = [];
+        foreach ($this->operationsService->getOperations($from, $to, $stateStr, $figi) as $operation) {
+            $operations[] = $operation;
+        }
 
-        if (empty($response->operations)) {
+        if ($operations === []) {
             $output->writeln('<comment>No operations found</comment>');
             return Command::SUCCESS;
         }
@@ -75,43 +74,23 @@ final class OperationsHistoryCommand extends Command
             'Instrument'
         ));
 
-        foreach ($response->operations as $operation) {
+        foreach ($operations as $operation) {
             $date = $operation->date?->format('Y-m-d H:i') ?? 'N/A';
-            $type = $operation->operationType?->name ?? $operation->type ?? 'N/A';
-            $stateStr = $operation->state?->name ?? 'N/A';
-            $payment = $operation->payment?->value ?? 0.0;
-            $price = $operation->price?->value ?? 0.0;
-            $instrument = $operation->figi ?? $operation->instrumentUid ?? 'N/A';
-
             $output->writeln(sprintf(
                 '%-20s %-10s %-10s %12.2f %12.2f %10d %-30s',
                 $date,
-                $type,
-                $stateStr,
-                $payment,
-                $price,
+                $operation->type,
+                $operation->state,
+                $operation->payment,
+                $operation->price,
                 $operation->quantity,
-                $instrument
+                $operation->instrument
             ));
         }
 
         $output->writeln('');
-        $output->writeln(sprintf('<info>Total operations: %d</info>', count($response->operations)));
+        $output->writeln(sprintf('<info>Total operations: %d</info>', count($operations)));
 
         return Command::SUCCESS;
-    }
-
-    private function parseState(?string $state): ?OperationStateEnum
-    {
-        if ($state === null) {
-            return null;
-        }
-
-        return match (strtolower($state)) {
-            'executed' => OperationStateEnum::EXECUTED,
-            'canceled' => OperationStateEnum::CANCELED,
-            'progress' => OperationStateEnum::PROGRESS,
-            default => null,
-        };
     }
 }

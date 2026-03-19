@@ -10,7 +10,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use TInvest\Skill\Component\TInvest\OperationsService\OperationsServiceComponentInterface;
+use TInvest\Skill\Service\Operations\OperationsServiceInterface;
 
 #[AsCommand(
     name: 'portfolio:show',
@@ -19,7 +19,7 @@ use TInvest\Skill\Component\TInvest\OperationsService\OperationsServiceComponent
 final class PortfolioShowCommand extends Command
 {
     public function __construct(
-        private readonly OperationsServiceComponentInterface $operationsService,
+        private readonly OperationsServiceInterface $operationsService,
     ) {
         parent::__construct();
     }
@@ -34,15 +34,9 @@ final class PortfolioShowCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $ticker = $input->getOption('ticker');
-        $portfolio = $this->operationsService->getPortfolio();
+        $portfolio = $this->operationsService->getPortfolio($ticker);
 
-        $positions = $portfolio->positions;
-
-        if ($ticker !== null) {
-            $positions = array_filter($positions, fn($p) => $p->ticker === $ticker);
-        }
-
-        if (empty($positions)) {
+        if ($portfolio->positions === []) {
             $message = $ticker !== null
                 ? sprintf('<comment>No position found for ticker: %s</comment>', $ticker)
                 : '<comment>No positions found</comment>';
@@ -53,15 +47,15 @@ final class PortfolioShowCommand extends Command
         $output->writeln('<info>Portfolio:</info>');
         $output->writeln('');
 
-        if ($portfolio->totalAmountPortfolio !== null) {
+        if ($portfolio->totalAmount !== null) {
             $output->writeln(sprintf(
                 '<info>Total Portfolio Value: %.2f %s</info>',
-                $portfolio->totalAmountPortfolio->value,
-                $portfolio->totalAmountPortfolio->currency
+                $portfolio->totalAmount,
+                $portfolio->currency
             ));
             $output->writeln(sprintf(
                 '<info>Expected Yield: %.2f%%</info>',
-                $portfolio->expectedYield->value
+                $portfolio->expectedYield
             ));
             $output->writeln('');
         }
@@ -76,19 +70,18 @@ final class PortfolioShowCommand extends Command
             'Current Price'
         ));
 
-        foreach ($positions as $position) {
-            $yield = $position->expectedYield->value;
+        foreach ($portfolio->positions as $position) {
+            $yield = $position->expectedYield;
             $yieldStr = $yield >= 0 ? '+' . number_format($yield, 2) : number_format($yield, 2);
-            $avgPrice = $position->averagePositionPrice?->value ?? 0.0;
 
             $output->writeln(sprintf(
                 '%-10s %-15s %10.2f %15.2f %12s %15.2f',
                 $position->ticker,
                 $position->instrumentType,
-                $position->quantity->value,
-                $avgPrice,
+                $position->quantity,
+                $position->avgPrice,
                 $yieldStr,
-                $position->currentPrice->value
+                $position->currentPrice
             ));
         }
 

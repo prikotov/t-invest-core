@@ -10,8 +10,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\TradingScheduleRequestDto;
-use TInvest\Skill\Component\TInvest\InstrumentsService\InstrumentsServiceComponentInterface;
+use TInvest\Skill\Service\Instruments\InstrumentsServiceInterface;
 
 #[AsCommand(
     name: 'schedule',
@@ -20,7 +19,7 @@ use TInvest\Skill\Component\TInvest\InstrumentsService\InstrumentsServiceCompone
 final class ScheduleCommand extends Command
 {
     public function __construct(
-        private readonly InstrumentsServiceComponentInterface $instrumentsService,
+        private readonly InstrumentsServiceInterface $instrumentsService,
     ) {
         parent::__construct();
     }
@@ -41,15 +40,7 @@ final class ScheduleCommand extends Command
         $from = $input->getOption('date');
         $days = (int)$input->getOption('days');
 
-        $to = date('Y-m-d', strtotime($from . ' +' . $days . ' days'));
-
-        $request = new TradingScheduleRequestDto(
-            exchange: $exchange,
-            from: $from,
-            to: $to,
-        );
-
-        $schedule = $this->instrumentsService->getTradingSchedule($request);
+        $schedule = $this->instrumentsService->getTradingSchedule($exchange, $from, $days);
 
         $output->writeln(sprintf('<info>Trading Schedule: %s</info>', $schedule->exchange));
         $output->writeln('');
@@ -61,14 +52,14 @@ final class ScheduleCommand extends Command
                 $output->writeln(sprintf(
                     '<comment>%s: NON-TRADING DAY</comment>%s',
                     $dateStr,
-                    $day->holidayName ? ' - ' . $day->holidayName : ''
+                    $day->holidayName !== null ? ' - ' . $day->holidayName : ''
                 ));
                 continue;
             }
 
             $output->writeln(sprintf('<info>%s: Trading Day</info>', $dateStr));
 
-            if ($day->morningSessionStart && $day->morningSessionEnd) {
+            if ($day->morningSessionStart !== null && $day->morningSessionEnd !== null) {
                 $output->writeln(sprintf(
                     '  Morning auction: %s - %s',
                     $day->morningSessionStart->format('H:i'),
@@ -76,7 +67,7 @@ final class ScheduleCommand extends Command
                 ));
             }
 
-            if ($day->startTime && $day->endTime) {
+            if ($day->startTime !== null && $day->endTime !== null) {
                 $output->writeln(sprintf(
                     '  Main session: %s - %s',
                     $day->startTime->format('H:i'),
@@ -84,7 +75,7 @@ final class ScheduleCommand extends Command
                 ));
             }
 
-            if ($day->clearingStart && $day->clearingEnd) {
+            if ($day->clearingStart !== null && $day->clearingEnd !== null) {
                 $output->writeln(sprintf(
                     '  Clearing: %s - %s',
                     $day->clearingStart->format('H:i'),
@@ -92,7 +83,7 @@ final class ScheduleCommand extends Command
                 ));
             }
 
-            if ($day->eveningSessionStart && $day->eveningSessionEnd) {
+            if ($day->eveningSessionStart !== null && $day->eveningSessionEnd !== null) {
                 $output->writeln(sprintf(
                     '  Evening session: %s - %s',
                     $day->eveningSessionStart->format('H:i'),

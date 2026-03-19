@@ -7,7 +7,7 @@ namespace TInvest\Skill\Component\TInvest\OperationsService\Dto;
 use TInvest\Skill\Component\TInvest\Shared\Dto\MoneyDto;
 use TInvest\Skill\Component\TInvest\Shared\Dto\PercentDto;
 
-final class PortfolioDto
+final readonly class PortfolioDto
 {
     /**
      * @param MoneyDto|null $totalAmountShares

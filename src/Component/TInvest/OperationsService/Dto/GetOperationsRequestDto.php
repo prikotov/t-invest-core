@@ -7,7 +7,7 @@ namespace TInvest\Skill\Component\TInvest\OperationsService\Dto;
 use DateTimeImmutable;
 use TInvest\Skill\Component\TInvest\OperationsService\Enum\OperationStateEnum;
 
-final class GetOperationsRequestDto
+final readonly class GetOperationsRequestDto
 {
     public function __construct(
         public readonly DateTimeImmutable $from,

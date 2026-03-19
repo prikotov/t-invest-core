@@ -6,7 +6,7 @@ namespace TInvest\Skill\Component\TInvest\InstrumentsService\Request;
 
 use DateTimeImmutable;
 
-final class GetDividendsRequestDto
+final readonly class GetDividendsRequestDto
 {
     public function __construct(
         public readonly string $figi,

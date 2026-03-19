@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace TInvest\Skill\Component\TInvest\MarketDataService\Dto;
 
-final class GetLastPricesResponseDto
+final readonly class GetLastPricesResponseDto
 {
     /**
      * @param array<LastPriceDto> $lastPrices

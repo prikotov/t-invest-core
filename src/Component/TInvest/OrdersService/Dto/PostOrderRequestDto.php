@@ -8,7 +8,7 @@ use TInvest\Skill\Component\TInvest\OrdersService\Enum\OrderDirectionEnum;
 use TInvest\Skill\Component\TInvest\OrdersService\Enum\OrderTypeEnum;
 use TInvest\Skill\Component\TInvest\Shared\Dto\QuotationDto;
 
-final class PostOrderRequestDto
+final readonly class PostOrderRequestDto
 {
     public function __construct(
         public readonly string $accountId,

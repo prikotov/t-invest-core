@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace TInvest\Skill\Component\TInvest\OrdersService\Dto;
 
-final class GetOrdersResponseDto
+final readonly class GetOrdersResponseDto
 {
     /**
      * @param array<OrderStateDto> $orders

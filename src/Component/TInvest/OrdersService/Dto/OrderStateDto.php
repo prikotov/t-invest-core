@@ -7,7 +7,7 @@ namespace TInvest\Skill\Component\TInvest\OrdersService\Dto;
 use DateTimeImmutable;
 use TInvest\Skill\Component\TInvest\Shared\Dto\MoneyDto;
 
-final class OrderStateDto
+final readonly class OrderStateDto
 {
     /**
      * @param array<OrderStageDto> $stages

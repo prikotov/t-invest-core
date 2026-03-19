@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace TInvest\Skill\Component\TInvest\MarketDataService\Dto;
 
-final class GetCandlesResponseDto
+final readonly class GetCandlesResponseDto
 {
     /**
      * @param array<CandleDto> $candles
