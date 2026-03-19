@@ -35,8 +35,12 @@ final readonly class GetAssetFundamentalsResponseMapper
                 epsTtm: $this->toFloatOrNull($item['epsTtm'] ?? null),
                 dilutedEpsTtm: $this->toFloatOrNull($item['dilutedEpsTtm'] ?? null),
                 freeCashFlowTtm: $this->toFloatOrNull($item['freeCashFlowTtm'] ?? null),
-                fiveYearAnnualRevenueGrowthRate: $this->toFloatOrNull($item['fiveYearAnnualRevenueGrowthRate'] ?? null),
-                threeYearAnnualRevenueGrowthRate: $this->toFloatOrNull($item['threeYearAnnualRevenueGrowthRate'] ?? null),
+                fiveYearAnnualRevenueGrowthRate: $this->toFloatOrNull(
+                    $item['fiveYearAnnualRevenueGrowthRate'] ?? null,
+                ),
+                threeYearAnnualRevenueGrowthRate: $this->toFloatOrNull(
+                    $item['threeYearAnnualRevenueGrowthRate'] ?? null,
+                ),
                 peRatioTtm: $this->toFloatOrNull($item['peRatioTtm'] ?? null),
                 priceToSalesTtm: $this->toFloatOrNull($item['priceToSalesTtm'] ?? null),
                 priceToBookTtm: $this->toFloatOrNull($item['priceToBookTtm'] ?? null),
@@ -58,8 +62,12 @@ final readonly class GetAssetFundamentalsResponseMapper
                 dividendYieldDailyTtm: $this->toFloatOrNull($item['dividendYieldDailyTtm'] ?? null),
                 dividendRateTtm: $this->toFloatOrNull($item['dividendRateTtm'] ?? null),
                 dividendsPerShare: $this->toFloatOrNull($item['dividendsPerShare'] ?? null),
-                fiveYearsAverageDividendYield: $this->toFloatOrNull($item['fiveYearsAverageDividendYield'] ?? null),
-                fiveYearAnnualDividendGrowthRate: $this->toFloatOrNull($item['fiveYearAnnualDividendGrowthRate'] ?? null),
+                fiveYearsAverageDividendYield: $this->toFloatOrNull(
+                    $item['fiveYearsAverageDividendYield'] ?? null,
+                ),
+                fiveYearAnnualDividendGrowthRate: $this->toFloatOrNull(
+                    $item['fiveYearAnnualDividendGrowthRate'] ?? null,
+                ),
                 dividendPayoutRatioFy: $this->toFloatOrNull($item['dividendPayoutRatioFy'] ?? null),
                 buyBackTtm: $this->toFloatOrNull($item['buyBackTtm'] ?? null),
                 oneYearAnnualRevenueGrowthRate: $this->toFloatOrNull($item['oneYearAnnualRevenueGrowthRate'] ?? null),

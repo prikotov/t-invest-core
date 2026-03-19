@@ -61,7 +61,9 @@ final class GetPortfolioResponseMapper
             $this->moneyFactory->create($data['totalAmountEtf'] ?? null),
             $this->moneyFactory->create($data['totalAmountCurrencies'] ?? null),
             $this->moneyFactory->create($data['totalAmountFutures'] ?? null),
-            $expectedYieldData !== null ? $this->percentFactory->create($expectedYieldData) : $this->percentFactory->create(['units' => 0, 'nano' => 0]),
+            $expectedYieldData !== null
+                ? $this->percentFactory->create($expectedYieldData)
+                : $this->percentFactory->create(['units' => 0, 'nano' => 0]),
             $this->moneyFactory->create($data['totalAmountPortfolio'] ?? null),
             $positions,
         );

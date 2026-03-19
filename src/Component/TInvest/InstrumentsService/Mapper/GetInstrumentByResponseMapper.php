@@ -40,14 +40,18 @@ final class GetInstrumentByResponseMapper
             name: (string)$instrument['name'],
             exchange: (string)$instrument['exchange'],
             countryOfRisk: isset($instrument['countryOfRisk']) ? (string)$instrument['countryOfRisk'] : null,
-            countryOfRiskName: isset($instrument['countryOfRiskName']) ? (string)$instrument['countryOfRiskName'] : null,
+            countryOfRiskName: isset($instrument['countryOfRiskName'])
+                ? (string)$instrument['countryOfRiskName']
+                : null,
             instrumentType: (string)$instrument['instrumentType'],
             tradingStatus: (int)$instrument['tradingStatus'],
             otcFlag: isset($instrument['otcFlag']) ? (bool)$instrument['otcFlag'] : null,
             buyAvailableFlag: (bool)($instrument['buyAvailableFlag'] ?? false),
             sellAvailableFlag: (bool)($instrument['sellAvailableFlag'] ?? false),
             minPriceIncrement: $this->quantityFactory->create($instrument['minPriceIncrement'] ?? $emptyQuantity),
-            apiTradeAvailableFlag: isset($instrument['apiTradeAvailableFlag']) ? (bool)$instrument['apiTradeAvailableFlag'] : null,
+            apiTradeAvailableFlag: isset($instrument['apiTradeAvailableFlag'])
+                ? (bool)$instrument['apiTradeAvailableFlag']
+                : null,
             uid: (string)$instrument['uid'],
             realExchange: (string)$instrument['realExchange'],
             positionUid: (string)$instrument['positionUid'],
@@ -56,8 +60,12 @@ final class GetInstrumentByResponseMapper
             weekendFlag: (bool)($instrument['weekendFlag'] ?? false),
             blockedTcaFlag: (bool)($instrument['blockedTcaFlag'] ?? false),
             instrumentKind: (string)$instrument['instrumentKind'],
-            first1minCandleDate: isset($instrument['first1minCandleDate']) ? new DateTimeImmutable($instrument['first1minCandleDate']) : null,
-            first1dayCandleDate: isset($instrument['first1dayCandleDate']) ? new DateTimeImmutable($instrument['first1dayCandleDate']) : null,
+            first1minCandleDate: isset($instrument['first1minCandleDate'])
+                ? new DateTimeImmutable($instrument['first1minCandleDate'])
+                : null,
+            first1dayCandleDate: isset($instrument['first1dayCandleDate'])
+                ? new DateTimeImmutable($instrument['first1dayCandleDate'])
+                : null,
             assetUid: (string)($instrument['assetUid'] ?? ''),
         );
     }

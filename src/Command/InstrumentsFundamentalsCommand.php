@@ -73,8 +73,13 @@ final class InstrumentsFundamentalsCommand extends Command
         return Command::SUCCESS;
     }
 
-    private function printValue(OutputInterface $output, string $label, mixed $value, bool $formatMoney = false, string $suffix = ''): void
-    {
+    private function printValue(
+        OutputInterface $output,
+        string $label,
+        mixed $value,
+        bool $formatMoney = false,
+        string $suffix = '',
+    ): void {
         if ($value === null) {
             return;
         }
