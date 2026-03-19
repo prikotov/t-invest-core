@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Component\TInvest;
+namespace TInvest\Core\Component\TInvest;
 
-use TInvest\Skill\Component\TInvest\InstrumentsService\InstrumentsServiceComponentInterface;
-use TInvest\Skill\Component\TInvest\OperationsService\OperationsServiceComponentInterface;
-use TInvest\Skill\Component\TInvest\OrdersService\OrdersServiceComponentInterface;
-use TInvest\Skill\Component\TInvest\UsersService\UsersServiceComponentInterface;
+use TInvest\Core\Component\TInvest\InstrumentsService\InstrumentsServiceComponentInterface;
+use TInvest\Core\Component\TInvest\OperationsService\OperationsServiceComponentInterface;
+use TInvest\Core\Component\TInvest\OrdersService\OrdersServiceComponentInterface;
+use TInvest\Core\Component\TInvest\UsersService\UsersServiceComponentInterface;
 
 final class TInvestComponent
 {

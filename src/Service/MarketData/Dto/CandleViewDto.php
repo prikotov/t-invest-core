@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Service\MarketData\Dto;
+namespace TInvest\Core\Service\MarketData\Dto;
 
 use DateTimeImmutable;
 

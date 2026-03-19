@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Tests\Component\TInvest\InstrumentsService\Mapper;
+namespace TInvest\Core\Tests\Component\TInvest\InstrumentsService\Mapper;
 
 use PHPUnit\Framework\TestCase;
-use TInvest\Skill\Component\TInvest\InstrumentsService\Mapper\GetDividendsResponseMapper;
-use TInvest\Skill\Component\TInvest\Shared\Factory\MoneyFactory;
-use TInvest\Skill\Component\TInvest\Shared\Factory\QuotationFactory;
+use TInvest\Core\Component\TInvest\InstrumentsService\Mapper\GetDividendsResponseMapper;
+use TInvest\Core\Component\TInvest\Shared\Factory\MoneyFactory;
+use TInvest\Core\Component\TInvest\Shared\Factory\QuotationFactory;
 
 final class GetDividendsResponseMapperTest extends TestCase
 {

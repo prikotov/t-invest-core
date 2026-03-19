@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Tests\Component\TInvest\UsersService\Mapper;
+namespace TInvest\Core\Tests\Component\TInvest\UsersService\Mapper;
 
 use PHPUnit\Framework\TestCase;
-use TInvest\Skill\Component\TInvest\UsersService\Mapper\GetAccountsResponseMapper;
+use TInvest\Core\Component\TInvest\UsersService\Mapper\GetAccountsResponseMapper;
 
 final class GetAccountsResponseMapperTest extends TestCase
 {

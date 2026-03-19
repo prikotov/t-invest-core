@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Component\TInvest\MarketDataService\Mapper;
+namespace TInvest\Core\Component\TInvest\MarketDataService\Mapper;
 
 use DateTimeImmutable;
-use TInvest\Skill\Component\TInvest\MarketDataService\Dto\CandleDto;
-use TInvest\Skill\Component\TInvest\MarketDataService\Dto\GetCandlesResponseDto;
-use TInvest\Skill\Component\TInvest\Shared\Factory\QuotationFactory;
+use TInvest\Core\Component\TInvest\MarketDataService\Dto\CandleDto;
+use TInvest\Core\Component\TInvest\MarketDataService\Dto\GetCandlesResponseDto;
+use TInvest\Core\Component\TInvest\Shared\Factory\QuotationFactory;
 
 final class CandleMapper
 {

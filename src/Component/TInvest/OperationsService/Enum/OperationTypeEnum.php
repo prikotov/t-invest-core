@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Component\TInvest\OperationsService\Enum;
+namespace TInvest\Core\Component\TInvest\OperationsService\Enum;
 
 enum OperationTypeEnum: string
 {

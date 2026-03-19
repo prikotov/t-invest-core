@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Component\TInvest\MarketDataService\Dto;
+namespace TInvest\Core\Component\TInvest\MarketDataService\Dto;
 
 use DateTimeImmutable;
-use TInvest\Skill\Component\TInvest\Shared\Dto\QuotationDto;
+use TInvest\Core\Component\TInvest\Shared\Dto\QuotationDto;
 
 final readonly class CandleDto
 {

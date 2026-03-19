@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Service\Operations\Dto;
+namespace TInvest\Core\Service\Operations\Dto;
 
 final readonly class PortfolioPositionViewDto
 {

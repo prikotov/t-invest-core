@@ -14,12 +14,12 @@
     "prefer-stable": true,
     "autoload": {
         "psr-4": {
-            "TInvest\\Skill\\": "src/"
+            "TInvest\\Core\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "TInvest\\Skill\\Tests\\": "tests/"
+            "TInvest\\Core\\Tests\\": "tests/"
         }
     },
     "require": {

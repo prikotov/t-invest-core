@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Component\TInvest\OrdersService\Mapper;
+namespace TInvest\Core\Component\TInvest\OrdersService\Mapper;
 
-use TInvest\Skill\Component\TInvest\OrdersService\Dto\GetOrdersResponseDto;
+use TInvest\Core\Component\TInvest\OrdersService\Dto\GetOrdersResponseDto;
 
 final class GetOrdersResponseMapper
 {

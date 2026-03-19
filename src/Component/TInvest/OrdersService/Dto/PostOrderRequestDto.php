@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Component\TInvest\OrdersService\Dto;
+namespace TInvest\Core\Component\TInvest\OrdersService\Dto;
 
-use TInvest\Skill\Component\TInvest\OrdersService\Enum\OrderDirectionEnum;
-use TInvest\Skill\Component\TInvest\OrdersService\Enum\OrderTypeEnum;
-use TInvest\Skill\Component\TInvest\Shared\Dto\QuotationDto;
+use TInvest\Core\Component\TInvest\OrdersService\Enum\OrderDirectionEnum;
+use TInvest\Core\Component\TInvest\OrdersService\Enum\OrderTypeEnum;
+use TInvest\Core\Component\TInvest\Shared\Dto\QuotationDto;
 
 final readonly class PostOrderRequestDto
 {

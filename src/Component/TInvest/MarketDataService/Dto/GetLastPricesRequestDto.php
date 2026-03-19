@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Component\TInvest\MarketDataService\Dto;
+namespace TInvest\Core\Component\TInvest\MarketDataService\Dto;
 
 final readonly class GetLastPricesRequestDto
 {

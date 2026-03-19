@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Component\TInvest\OrdersService\Mapper;
+namespace TInvest\Core\Component\TInvest\OrdersService\Mapper;
 
 use DateTimeImmutable;
-use TInvest\Skill\Component\TInvest\OrdersService\Dto\OrderStageDto;
-use TInvest\Skill\Component\TInvest\OrdersService\Dto\OrderStateDto;
-use TInvest\Skill\Component\TInvest\Shared\Factory\MoneyFactory;
+use TInvest\Core\Component\TInvest\OrdersService\Dto\OrderStageDto;
+use TInvest\Core\Component\TInvest\OrdersService\Dto\OrderStateDto;
+use TInvest\Core\Component\TInvest\Shared\Factory\MoneyFactory;
 
 final class OrderStateResponseMapper
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Service\Accounts\Dto;
+namespace TInvest\Core\Service\Accounts\Dto;
 
 final readonly class AccountViewDto
 {

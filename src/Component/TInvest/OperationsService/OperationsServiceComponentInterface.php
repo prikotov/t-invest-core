@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Component\TInvest\OperationsService;
+namespace TInvest\Core\Component\TInvest\OperationsService;
 
-use TInvest\Skill\Component\TInvest\OperationsService\Dto\GetOperationsRequestDto;
-use TInvest\Skill\Component\TInvest\OperationsService\Dto\GetOperationsResponseDto;
-use TInvest\Skill\Component\TInvest\OperationsService\Dto\PortfolioDto;
+use TInvest\Core\Component\TInvest\OperationsService\Dto\GetOperationsRequestDto;
+use TInvest\Core\Component\TInvest\OperationsService\Dto\GetOperationsResponseDto;
+use TInvest\Core\Component\TInvest\OperationsService\Dto\PortfolioDto;
 
 interface OperationsServiceComponentInterface
 {

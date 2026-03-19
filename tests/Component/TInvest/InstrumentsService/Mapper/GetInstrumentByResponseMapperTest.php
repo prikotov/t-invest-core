@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Tests\Component\TInvest\InstrumentsService\Mapper;
+namespace TInvest\Core\Tests\Component\TInvest\InstrumentsService\Mapper;
 
 use PHPUnit\Framework\TestCase;
-use TInvest\Skill\Component\TInvest\InstrumentsService\Mapper\GetInstrumentByResponseMapper;
-use TInvest\Skill\Component\TInvest\Shared\Factory\QuantityFactory;
+use TInvest\Core\Component\TInvest\InstrumentsService\Mapper\GetInstrumentByResponseMapper;
+use TInvest\Core\Component\TInvest\Shared\Factory\QuantityFactory;
 
 final class GetInstrumentByResponseMapperTest extends TestCase
 {

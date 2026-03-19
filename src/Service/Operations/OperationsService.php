@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Service\Operations;
+namespace TInvest\Core\Service\Operations;
 
 use DateTimeImmutable;
 use Generator;
 use Override;
-use TInvest\Skill\Component\TInvest\OperationsService\Dto\GetOperationsRequestDto;
-use TInvest\Skill\Component\TInvest\OperationsService\Enum\OperationStateEnum;
-use TInvest\Skill\Component\TInvest\OperationsService\OperationsServiceComponentInterface;
-use TInvest\Skill\Service\Operations\Dto\OperationViewDto;
-use TInvest\Skill\Service\Operations\Dto\PortfolioPositionViewDto;
-use TInvest\Skill\Service\Operations\Dto\PortfolioViewDto;
+use TInvest\Core\Component\TInvest\OperationsService\Dto\GetOperationsRequestDto;
+use TInvest\Core\Component\TInvest\OperationsService\Enum\OperationStateEnum;
+use TInvest\Core\Component\TInvest\OperationsService\OperationsServiceComponentInterface;
+use TInvest\Core\Service\Operations\Dto\OperationViewDto;
+use TInvest\Core\Service\Operations\Dto\PortfolioPositionViewDto;
+use TInvest\Core\Service\Operations\Dto\PortfolioViewDto;
 
 final class OperationsService implements OperationsServiceInterface
 {

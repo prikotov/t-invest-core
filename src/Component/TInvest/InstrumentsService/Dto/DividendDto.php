@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Component\TInvest\InstrumentsService\Dto;
+namespace TInvest\Core\Component\TInvest\InstrumentsService\Dto;
 
 use DateTimeImmutable;
-use TInvest\Skill\Component\TInvest\Shared\Dto\MoneyDto;
-use TInvest\Skill\Component\TInvest\Shared\Dto\QuotationDto;
+use TInvest\Core\Component\TInvest\Shared\Dto\MoneyDto;
+use TInvest\Core\Component\TInvest\Shared\Dto\QuotationDto;
 
 final readonly class DividendDto
 {

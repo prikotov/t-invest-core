@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Component\TInvest\UsersService;
+namespace TInvest\Core\Component\TInvest\UsersService;
 
 use Generator;
 use GuzzleHttp\Client;
 use Override;
-use TInvest\Skill\Component\TInvest\UsersService\Dto\AccountDto;
-use TInvest\Skill\Component\TInvest\UsersService\Mapper\GetAccountsResponseMapper;
+use TInvest\Core\Component\TInvest\UsersService\Dto\AccountDto;
+use TInvest\Core\Component\TInvest\UsersService\Mapper\GetAccountsResponseMapper;
 
 final class UsersServiceComponent implements UsersServiceComponentInterface
 {

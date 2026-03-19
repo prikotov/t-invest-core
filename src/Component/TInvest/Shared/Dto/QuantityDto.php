@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Component\TInvest\Shared\Dto;
+namespace TInvest\Core\Component\TInvest\Shared\Dto;
 
 final readonly class QuantityDto
 {

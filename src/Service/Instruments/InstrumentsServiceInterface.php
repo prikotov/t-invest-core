@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Service\Instruments;
+namespace TInvest\Core\Service\Instruments;
 
-use TInvest\Skill\Service\Instruments\Dto\AssetFundamentalViewDto;
-use TInvest\Skill\Service\Instruments\Dto\TradingScheduleViewDto;
+use TInvest\Core\Service\Instruments\Dto\AssetFundamentalViewDto;
+use TInvest\Core\Service\Instruments\Dto\TradingScheduleViewDto;
 
 interface InstrumentsServiceInterface
 {

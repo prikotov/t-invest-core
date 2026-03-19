@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Component\TInvest\OrdersService\Mapper;
+namespace TInvest\Core\Component\TInvest\OrdersService\Mapper;
 
 use RuntimeException;
-use TInvest\Skill\Component\TInvest\OrdersService\Dto\PostOrderRequestDto;
+use TInvest\Core\Component\TInvest\OrdersService\Dto\PostOrderRequestDto;
 
 final class PostOrderRequestMapper
 {

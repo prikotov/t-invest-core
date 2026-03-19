@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Component\TInvest\OrdersService;
+namespace TInvest\Core\Component\TInvest\OrdersService;
 
-use TInvest\Skill\Component\TInvest\OrdersService\Dto\CancelOrderResponseDto;
-use TInvest\Skill\Component\TInvest\OrdersService\Dto\GetOrdersResponseDto;
-use TInvest\Skill\Component\TInvest\OrdersService\Dto\OrderStateDto;
-use TInvest\Skill\Component\TInvest\OrdersService\Dto\PostOrderRequestDto;
-use TInvest\Skill\Component\TInvest\OrdersService\Dto\PostOrderResponseDto;
-use TInvest\Skill\Component\TInvest\OrdersService\Dto\ReplaceOrderRequestDto;
-use TInvest\Skill\Component\TInvest\OrdersService\Dto\ReplaceOrderResponseDto;
+use TInvest\Core\Component\TInvest\OrdersService\Dto\CancelOrderResponseDto;
+use TInvest\Core\Component\TInvest\OrdersService\Dto\GetOrdersResponseDto;
+use TInvest\Core\Component\TInvest\OrdersService\Dto\OrderStateDto;
+use TInvest\Core\Component\TInvest\OrdersService\Dto\PostOrderRequestDto;
+use TInvest\Core\Component\TInvest\OrdersService\Dto\PostOrderResponseDto;
+use TInvest\Core\Component\TInvest\OrdersService\Dto\ReplaceOrderRequestDto;
+use TInvest\Core\Component\TInvest\OrdersService\Dto\ReplaceOrderResponseDto;
 
 interface OrdersServiceComponentInterface
 {
