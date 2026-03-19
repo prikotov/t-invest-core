@@ -14,6 +14,8 @@ use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\FindInstrumentRespons
 use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\GetAssetFundamentalsRequestDto;
 use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\GetAssetFundamentalsResponseDto;
 use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\InstrumentDto;
+use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\TradingScheduleDto;
+use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\TradingScheduleRequestDto;
 use TInvest\Skill\Component\TInvest\InstrumentsService\Mapper\FindInstrumentRequestMapper;
 use TInvest\Skill\Component\TInvest\InstrumentsService\Mapper\FindInstrumentResponseMapper;
 use TInvest\Skill\Component\TInvest\InstrumentsService\Mapper\GetAssetFundamentalsRequestMapper;
@@ -21,6 +23,8 @@ use TInvest\Skill\Component\TInvest\InstrumentsService\Mapper\GetAssetFundamenta
 use TInvest\Skill\Component\TInvest\InstrumentsService\Mapper\GetDividendsRequestMapper;
 use TInvest\Skill\Component\TInvest\InstrumentsService\Mapper\GetDividendsResponseMapper;
 use TInvest\Skill\Component\TInvest\InstrumentsService\Mapper\GetInstrumentByResponseMapper;
+use TInvest\Skill\Component\TInvest\InstrumentsService\Mapper\TradingScheduleMapper;
+use TInvest\Skill\Component\TInvest\InstrumentsService\Mapper\TradingScheduleRequestMapper;
 use TInvest\Skill\Component\TInvest\InstrumentsService\Request\GetDividendsRequestDto;
 
 final class InstrumentsServiceComponent implements InstrumentsServiceComponentInterface
@@ -37,6 +41,8 @@ final class InstrumentsServiceComponent implements InstrumentsServiceComponentIn
         private readonly FindInstrumentResponseMapper $findInstrumentResponseMapper,
         private readonly GetAssetFundamentalsRequestMapper $getAssetFundamentalsRequestMapper,
         private readonly GetAssetFundamentalsResponseMapper $getAssetFundamentalsResponseMapper,
+        private readonly TradingScheduleRequestMapper $tradingScheduleRequestMapper,
+        private readonly TradingScheduleMapper $tradingScheduleMapper,
     ) {
     }
 
@@ -154,5 +160,31 @@ final class InstrumentsServiceComponent implements InstrumentsServiceComponentIn
         }
 
         return $this->getAssetFundamentalsResponseMapper->map($data);
+    }
+
+    #[Override]
+    public function getTradingSchedule(TradingScheduleRequestDto $request): TradingScheduleDto
+    {
+        $body = $this->tradingScheduleRequestMapper->map($request);
+        $this->logger->debug("Get trading schedule: {request}", [
+            'request' => $body,
+        ]);
+
+        $res = $this->client->post(
+            $this->getUrl('tinkoff.public.invest.api.contract.v1.InstrumentsService/TradingSchedules'),
+            [
+                'headers' => $this->getHeaders(),
+                'body' => $body,
+            ]
+        );
+
+        $data = (string)$res->getBody();
+
+        $encoded = json_encode(json_decode($data));
+        if ($encoded !== false) {
+            $this->logger->debug($encoded);
+        }
+
+        return $this->tradingScheduleMapper->map($data);
     }
 }
