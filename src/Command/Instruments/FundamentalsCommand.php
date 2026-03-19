@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Core\Command;
+namespace TInvest\Core\Command\Instruments;
 
 use Override;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -16,7 +16,7 @@ use TInvest\Core\Service\Instruments\InstrumentsServiceInterface;
     name: 'instruments:fundamentals',
     description: 'Get fundamental indicators for instruments by tickers',
 )]
-final class InstrumentsFundamentalsCommand extends Command
+final class FundamentalsCommand extends Command
 {
     public function __construct(
         private readonly InstrumentsServiceInterface $instrumentsService,

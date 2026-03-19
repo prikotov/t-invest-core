@@ -24,7 +24,7 @@ services:
             - '../src/Service/*/Dto/*'
 
     TInvest\Core\Command\:
-        resource: '../src/Command/*'
+        resource: '../src/Command/'
         tags: ['console.command']
 
     GuzzleHttp\Client:

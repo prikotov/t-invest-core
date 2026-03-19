@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Core\Command;
+namespace TInvest\Core\Command\Operations;
 
 use DateTimeImmutable;
 use Override;
@@ -17,7 +17,7 @@ use TInvest\Core\Service\Operations\OperationsServiceInterface;
     name: 'operations:history',
     description: 'Get operations history',
 )]
-final class OperationsHistoryCommand extends Command
+final class HistoryCommand extends Command
 {
     public function __construct(
         private readonly OperationsServiceInterface $operationsService,

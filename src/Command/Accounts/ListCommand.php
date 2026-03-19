@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Core\Command;
+namespace TInvest\Core\Command\Accounts;
 
 use Override;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -12,10 +12,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 use TInvest\Core\Service\Accounts\AccountsServiceInterface;
 
 #[AsCommand(
-    name: 'accounts:list',
+    name: "accounts:list",
     description: 'Get list of user accounts',
 )]
-final class AccountsListCommand extends Command
+final class ListCommand extends Command
 {
     public function __construct(
         private readonly AccountsServiceInterface $accountsService,

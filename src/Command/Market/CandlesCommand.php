@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Core\Command;
+namespace TInvest\Core\Command\Market;
 
 use DateTimeImmutable;
 use Override;
@@ -18,7 +18,7 @@ use TInvest\Core\Service\MarketData\MarketDataServiceInterface;
     name: 'market:candles',
     description: 'Get historical candles for an instrument',
 )]
-final class MarketCandlesCommand extends Command
+final class CandlesCommand extends Command
 {
     public function __construct(
         private readonly MarketDataServiceInterface $marketDataService,
