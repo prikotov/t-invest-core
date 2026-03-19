@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Core\Command;
+namespace TInvest\Core\Command\Portfolio;
 
 use Override;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -16,7 +16,7 @@ use TInvest\Core\Service\Operations\OperationsServiceInterface;
     name: 'portfolio:show',
     description: 'Show portfolio with optional ticker filter',
 )]
-final class PortfolioShowCommand extends Command
+final class ShowCommand extends Command
 {
     public function __construct(
         private readonly OperationsServiceInterface $operationsService,

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Core\Command;
+namespace TInvest\Core\Command\Market;
 
 use Override;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -17,7 +17,7 @@ use TInvest\Core\Service\MarketData\MarketDataServiceInterface;
     name: 'market:orderbook',
     description: 'Get order book (glass) for an instrument',
 )]
-final class MarketOrderbookCommand extends Command
+final class OrderbookCommand extends Command
 {
     public function __construct(
         private readonly MarketDataServiceInterface $marketDataService,

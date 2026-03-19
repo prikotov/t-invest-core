@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Core\Command;
+namespace TInvest\Core\Command\Instruments;
 
 use Override;
 use Symfony\Component\Console\Attribute\AsCommand;

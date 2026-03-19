@@ -4,12 +4,19 @@ declare(strict_types=1);
 
 namespace TInvest\Core\Service\Instruments;
 
+use DateTimeImmutable;
 use Override;
 use TInvest\Core\Component\TInvest\InstrumentsService\Dto\FindInstrumentRequestDto;
 use TInvest\Core\Component\TInvest\InstrumentsService\Dto\GetAssetFundamentalsRequestDto;
+use TInvest\Core\Component\TInvest\InstrumentsService\Dto\GetAssetReportsRequestDto;
+use TInvest\Core\Component\TInvest\InstrumentsService\Dto\GetBondEventsRequestDto;
 use TInvest\Core\Component\TInvest\InstrumentsService\Dto\TradingScheduleRequestDto;
 use TInvest\Core\Component\TInvest\InstrumentsService\InstrumentsServiceComponentInterface;
+use TInvest\Core\Component\TInvest\InstrumentsService\Request\GetDividendsRequestDto;
 use TInvest\Core\Service\Instruments\Dto\AssetFundamentalViewDto;
+use TInvest\Core\Service\Instruments\Dto\AssetReportViewDto;
+use TInvest\Core\Service\Instruments\Dto\BondEventViewDto;
+use TInvest\Core\Service\Instruments\Dto\DividendViewDto;
 use TInvest\Core\Service\Instruments\Dto\TradingDayViewDto;
 use TInvest\Core\Service\Instruments\Dto\TradingScheduleViewDto;
 
@@ -50,6 +57,31 @@ final class InstrumentsService implements InstrumentsServiceInterface
     {
         $instrument = $this->component->getInstrumentBy($assetUid, 'INSTRUMENT_ID_TYPE_UID');
         return $instrument->ticker;
+    }
+
+    #[Override]
+    public function getFigiByTicker(string $ticker): ?string
+    {
+        $findResponse = $this->component->findInstrument(new FindInstrumentRequestDto($ticker));
+
+        $uid = null;
+        foreach ($findResponse->instruments as $instrument) {
+            if ($instrument->ticker === $ticker) {
+                $uid = $instrument->uid;
+                break;
+            }
+        }
+
+        if ($uid === null && $findResponse->instruments !== []) {
+            $uid = $findResponse->instruments[0]->uid;
+        }
+
+        if ($uid === null) {
+            return null;
+        }
+
+        $instrument = $this->component->getInstrumentBy($uid, 'INSTRUMENT_ID_TYPE_UID');
+        return $instrument->figi;
     }
 
     #[Override]
@@ -134,5 +166,87 @@ final class InstrumentsService implements InstrumentsServiceInterface
             exchange: $schedule->exchange,
             days: array_values($days),
         );
+    }
+
+    #[Override]
+    public function getDividends(string $ticker, ?DateTimeImmutable $from = null, ?DateTimeImmutable $to = null): array
+    {
+        $figi = $this->getFigiByTicker($ticker);
+        if ($figi === null) {
+            return [];
+        }
+
+        $request = new GetDividendsRequestDto($figi, $from, $to);
+        $dividends = iterator_to_array($this->component->getDividends($request));
+
+        $result = [];
+        foreach ($dividends as $dividend) {
+            $result[] = new DividendViewDto(
+                ticker: $ticker,
+                dividendNet: $dividend->dividendNet?->value,
+                currency: $dividend->dividendNet?->currency,
+                paymentDate: $dividend->paymentDate,
+                recordDate: $dividend->recordDate,
+                lastBuyDate: $dividend->lastBuyDate,
+                dividendType: $dividend->dividendType,
+                yieldValue: $dividend->yieldValue?->value,
+            );
+        }
+
+        return $result;
+    }
+
+    #[Override]
+    public function getAssetReports(string $ticker, ?DateTimeImmutable $from = null, ?DateTimeImmutable $to = null): array
+    {
+        $assetUid = $this->getAssetUidByTicker($ticker);
+        if ($assetUid === null) {
+            return [];
+        }
+
+        $request = new GetAssetReportsRequestDto($assetUid, $from, $to);
+        $reports = iterator_to_array($this->component->getAssetReports($request));
+
+        $result = [];
+        foreach ($reports as $report) {
+            $result[] = new AssetReportViewDto(
+                ticker: $ticker,
+                reportDate: $report->reportDate,
+                periodYear: $report->periodYear,
+                periodNum: $report->periodNum,
+                periodType: $report->periodType,
+            );
+        }
+
+        return $result;
+    }
+
+    #[Override]
+    public function getBondEvents(string $ticker, ?string $eventType = null, ?DateTimeImmutable $from = null, ?DateTimeImmutable $to = null): array
+    {
+        $figi = $this->getFigiByTicker($ticker);
+        if ($figi === null) {
+            return [];
+        }
+
+        $request = new GetBondEventsRequestDto($figi, $eventType, $from, $to);
+        $events = iterator_to_array($this->component->getBondEvents($request));
+
+        $result = [];
+        foreach ($events as $event) {
+            $result[] = new BondEventViewDto(
+                ticker: $ticker,
+                eventNumber: $event->eventNumber,
+                eventDate: $event->eventDate,
+                eventType: $event->eventType,
+                payOneBond: $event->payOneBond?->value,
+                currency: $event->payOneBond?->currency,
+                couponPeriod: $event->couponPeriod,
+                couponInterestRate: $event->couponInterestRate?->value,
+                note: $event->note,
+            );
+        }
+
+        return $result;
     }
 }

@@ -8,11 +8,15 @@ use Generator;
 use GuzzleHttp\Client;
 use Override;
 use Psr\Log\LoggerInterface;
+use TInvest\Core\Component\TInvest\InstrumentsService\Dto\AssetReportEventDto;
+use TInvest\Core\Component\TInvest\InstrumentsService\Dto\BondEventDto;
 use TInvest\Core\Component\TInvest\InstrumentsService\Dto\DividendDto;
 use TInvest\Core\Component\TInvest\InstrumentsService\Dto\FindInstrumentRequestDto;
 use TInvest\Core\Component\TInvest\InstrumentsService\Dto\FindInstrumentResponseDto;
 use TInvest\Core\Component\TInvest\InstrumentsService\Dto\GetAssetFundamentalsRequestDto;
 use TInvest\Core\Component\TInvest\InstrumentsService\Dto\GetAssetFundamentalsResponseDto;
+use TInvest\Core\Component\TInvest\InstrumentsService\Dto\GetAssetReportsRequestDto;
+use TInvest\Core\Component\TInvest\InstrumentsService\Dto\GetBondEventsRequestDto;
 use TInvest\Core\Component\TInvest\InstrumentsService\Dto\InstrumentDto;
 use TInvest\Core\Component\TInvest\InstrumentsService\Dto\TradingScheduleDto;
 use TInvest\Core\Component\TInvest\InstrumentsService\Dto\TradingScheduleRequestDto;
@@ -20,6 +24,10 @@ use TInvest\Core\Component\TInvest\InstrumentsService\Mapper\FindInstrumentReque
 use TInvest\Core\Component\TInvest\InstrumentsService\Mapper\FindInstrumentResponseMapper;
 use TInvest\Core\Component\TInvest\InstrumentsService\Mapper\GetAssetFundamentalsRequestMapper;
 use TInvest\Core\Component\TInvest\InstrumentsService\Mapper\GetAssetFundamentalsResponseMapper;
+use TInvest\Core\Component\TInvest\InstrumentsService\Mapper\GetAssetReportsRequestMapper;
+use TInvest\Core\Component\TInvest\InstrumentsService\Mapper\GetAssetReportsResponseMapper;
+use TInvest\Core\Component\TInvest\InstrumentsService\Mapper\GetBondEventsRequestMapper;
+use TInvest\Core\Component\TInvest\InstrumentsService\Mapper\GetBondEventsResponseMapper;
 use TInvest\Core\Component\TInvest\InstrumentsService\Mapper\GetDividendsRequestMapper;
 use TInvest\Core\Component\TInvest\InstrumentsService\Mapper\GetDividendsResponseMapper;
 use TInvest\Core\Component\TInvest\InstrumentsService\Mapper\GetInstrumentByResponseMapper;
@@ -43,6 +51,10 @@ final class InstrumentsServiceComponent implements InstrumentsServiceComponentIn
         private readonly GetAssetFundamentalsResponseMapper $getAssetFundamentalsResponseMapper,
         private readonly TradingScheduleRequestMapper $tradingScheduleRequestMapper,
         private readonly TradingScheduleMapper $tradingScheduleMapper,
+        private readonly GetAssetReportsRequestMapper $getAssetReportsRequestMapper,
+        private readonly GetAssetReportsResponseMapper $getAssetReportsResponseMapper,
+        private readonly GetBondEventsRequestMapper $getBondEventsRequestMapper,
+        private readonly GetBondEventsResponseMapper $getBondEventsResponseMapper,
     ) {
     }
 
@@ -186,5 +198,57 @@ final class InstrumentsServiceComponent implements InstrumentsServiceComponentIn
         }
 
         return $this->tradingScheduleMapper->map($data);
+    }
+
+    #[Override]
+    public function getAssetReports(GetAssetReportsRequestDto $request): Generator
+    {
+        $body = $this->getAssetReportsRequestMapper->map($request);
+        $this->logger->debug("Get asset reports: {request}", [
+            'request' => $body,
+        ]);
+
+        $res = $this->client->post(
+            $this->getUrl('tinkoff.public.invest.api.contract.v1.InstrumentsService/GetAssetReports'),
+            [
+                'headers' => $this->getHeaders(),
+                'body' => $body,
+            ]
+        );
+
+        $data = (string)$res->getBody();
+
+        $encoded = json_encode(json_decode($data));
+        if ($encoded !== false) {
+            $this->logger->debug($encoded);
+        }
+
+        yield from $this->getAssetReportsResponseMapper->map($data);
+    }
+
+    #[Override]
+    public function getBondEvents(GetBondEventsRequestDto $request): Generator
+    {
+        $body = $this->getBondEventsRequestMapper->map($request);
+        $this->logger->debug("Get bond events: {request}", [
+            'request' => $body,
+        ]);
+
+        $res = $this->client->post(
+            $this->getUrl('tinkoff.public.invest.api.contract.v1.InstrumentsService/GetBondEvents'),
+            [
+                'headers' => $this->getHeaders(),
+                'body' => $body,
+            ]
+        );
+
+        $data = (string)$res->getBody();
+
+        $encoded = json_encode(json_decode($data));
+        if ($encoded !== false) {
+            $this->logger->debug($encoded);
+        }
+
+        yield from $this->getBondEventsResponseMapper->map($data);
     }
 }

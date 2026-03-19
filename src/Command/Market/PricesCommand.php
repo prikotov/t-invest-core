@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Core\Command;
+namespace TInvest\Core\Command\Market;
 
 use Override;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -16,7 +16,7 @@ use TInvest\Core\Service\MarketData\MarketDataServiceInterface;
     name: 'market:prices',
     description: 'Get last prices for instruments',
 )]
-final class MarketPricesCommand extends Command
+final class PricesCommand extends Command
 {
     public function __construct(
         private readonly MarketDataServiceInterface $marketDataService,
