@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Component\TInvest\OperationsService\Mapper;
+namespace TInvest\Core\Component\TInvest\OperationsService\Mapper;
 
 use DateTimeImmutable;
-use TInvest\Skill\Component\TInvest\OperationsService\Dto\GetOperationsResponseDto;
-use TInvest\Skill\Component\TInvest\OperationsService\Dto\OperationDto;
-use TInvest\Skill\Component\TInvest\OperationsService\Enum\OperationStateEnum;
-use TInvest\Skill\Component\TInvest\OperationsService\Enum\OperationTypeEnum;
-use TInvest\Skill\Component\TInvest\Shared\Factory\MoneyFactory;
+use TInvest\Core\Component\TInvest\OperationsService\Dto\GetOperationsResponseDto;
+use TInvest\Core\Component\TInvest\OperationsService\Dto\OperationDto;
+use TInvest\Core\Component\TInvest\OperationsService\Enum\OperationStateEnum;
+use TInvest\Core\Component\TInvest\OperationsService\Enum\OperationTypeEnum;
+use TInvest\Core\Component\TInvest\Shared\Factory\MoneyFactory;
 
 final class OperationMapper
 {

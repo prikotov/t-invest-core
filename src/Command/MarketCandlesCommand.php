@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Command;
+namespace TInvest\Core\Command;
 
 use DateTimeImmutable;
 use Override;
@@ -12,7 +12,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use TInvest\Skill\Service\MarketData\MarketDataServiceInterface;
+use TInvest\Core\Service\MarketData\MarketDataServiceInterface;
 
 #[AsCommand(
     name: 'market:candles',

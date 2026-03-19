@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Component\TInvest\InstrumentsService\Mapper;
+namespace TInvest\Core\Component\TInvest\InstrumentsService\Mapper;
 
 use DateTimeImmutable;
-use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\AssetFundamentalDto;
-use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\GetAssetFundamentalsResponseDto;
+use TInvest\Core\Component\TInvest\InstrumentsService\Dto\AssetFundamentalDto;
+use TInvest\Core\Component\TInvest\InstrumentsService\Dto\GetAssetFundamentalsResponseDto;
 
 final readonly class GetAssetFundamentalsResponseMapper
 {

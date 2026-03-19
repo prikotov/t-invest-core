@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Service\Accounts;
+namespace TInvest\Core\Service\Accounts;
 
 use Generator;
 use Override;
-use TInvest\Skill\Component\TInvest\UsersService\UsersServiceComponentInterface;
-use TInvest\Skill\Service\Accounts\Dto\AccountViewDto;
+use TInvest\Core\Component\TInvest\UsersService\UsersServiceComponentInterface;
+use TInvest\Core\Service\Accounts\Dto\AccountViewDto;
 
 final class AccountsService implements AccountsServiceInterface
 {

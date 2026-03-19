@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Tests\Component\TInvest\OrdersService\Mapper;
+namespace TInvest\Core\Tests\Component\TInvest\OrdersService\Mapper;
 
 use PHPUnit\Framework\TestCase;
-use TInvest\Skill\Component\TInvest\OrdersService\Dto\PostOrderRequestDto;
-use TInvest\Skill\Component\TInvest\OrdersService\Enum\OrderDirectionEnum;
-use TInvest\Skill\Component\TInvest\OrdersService\Enum\OrderTypeEnum;
-use TInvest\Skill\Component\TInvest\OrdersService\Mapper\PostOrderRequestMapper;
-use TInvest\Skill\Component\TInvest\Shared\Dto\QuotationDto;
+use TInvest\Core\Component\TInvest\OrdersService\Dto\PostOrderRequestDto;
+use TInvest\Core\Component\TInvest\OrdersService\Enum\OrderDirectionEnum;
+use TInvest\Core\Component\TInvest\OrdersService\Enum\OrderTypeEnum;
+use TInvest\Core\Component\TInvest\OrdersService\Mapper\PostOrderRequestMapper;
+use TInvest\Core\Component\TInvest\Shared\Dto\QuotationDto;
 
 final class PostOrderRequestMapperTest extends TestCase
 {

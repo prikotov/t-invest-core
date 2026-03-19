@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Tests\Component\TInvest\OperationsService\Mapper;
+namespace TInvest\Core\Tests\Component\TInvest\OperationsService\Mapper;
 
 use PHPUnit\Framework\TestCase;
-use TInvest\Skill\Component\TInvest\OperationsService\Mapper\GetPortfolioResponseMapper;
-use TInvest\Skill\Component\TInvest\Shared\Factory\MoneyFactory;
-use TInvest\Skill\Component\TInvest\Shared\Factory\PercentFactory;
-use TInvest\Skill\Component\TInvest\Shared\Factory\QuantityFactory;
-use TInvest\Skill\Component\TInvest\Shared\Factory\QuotationFactory;
+use TInvest\Core\Component\TInvest\OperationsService\Mapper\GetPortfolioResponseMapper;
+use TInvest\Core\Component\TInvest\Shared\Factory\MoneyFactory;
+use TInvest\Core\Component\TInvest\Shared\Factory\PercentFactory;
+use TInvest\Core\Component\TInvest\Shared\Factory\QuantityFactory;
+use TInvest\Core\Component\TInvest\Shared\Factory\QuotationFactory;
 
 final class GetPortfolioResponseMapperTest extends TestCase
 {

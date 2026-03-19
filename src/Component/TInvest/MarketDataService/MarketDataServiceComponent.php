@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Component\TInvest\MarketDataService;
+namespace TInvest\Core\Component\TInvest\MarketDataService;
 
 use GuzzleHttp\Client;
 use Override;
 use Psr\Log\LoggerInterface;
-use TInvest\Skill\Component\TInvest\MarketDataService\Dto\GetCandlesRequestDto;
-use TInvest\Skill\Component\TInvest\MarketDataService\Dto\GetCandlesResponseDto;
-use TInvest\Skill\Component\TInvest\MarketDataService\Dto\GetLastPricesRequestDto;
-use TInvest\Skill\Component\TInvest\MarketDataService\Dto\GetLastPricesResponseDto;
-use TInvest\Skill\Component\TInvest\MarketDataService\Mapper\CandleMapper;
-use TInvest\Skill\Component\TInvest\MarketDataService\Mapper\LastPriceMapper;
+use TInvest\Core\Component\TInvest\MarketDataService\Dto\GetCandlesRequestDto;
+use TInvest\Core\Component\TInvest\MarketDataService\Dto\GetCandlesResponseDto;
+use TInvest\Core\Component\TInvest\MarketDataService\Dto\GetLastPricesRequestDto;
+use TInvest\Core\Component\TInvest\MarketDataService\Dto\GetLastPricesResponseDto;
+use TInvest\Core\Component\TInvest\MarketDataService\Mapper\CandleMapper;
+use TInvest\Core\Component\TInvest\MarketDataService\Mapper\LastPriceMapper;
 
 final class MarketDataServiceComponent implements MarketDataServiceComponentInterface
 {

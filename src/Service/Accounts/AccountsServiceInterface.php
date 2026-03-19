@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Service\Accounts;
+namespace TInvest\Core\Service\Accounts;
 
 use Generator;
-use TInvest\Skill\Service\Accounts\Dto\AccountViewDto;
+use TInvest\Core\Service\Accounts\Dto\AccountViewDto;
 
 interface AccountsServiceInterface
 {

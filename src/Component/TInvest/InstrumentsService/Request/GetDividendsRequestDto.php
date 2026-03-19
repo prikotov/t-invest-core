@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Component\TInvest\InstrumentsService\Request;
+namespace TInvest\Core\Component\TInvest\InstrumentsService\Request;
 
 use DateTimeImmutable;
 

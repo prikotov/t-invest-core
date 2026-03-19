@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Component\TInvest\InstrumentsService\Mapper;
+namespace TInvest\Core\Component\TInvest\InstrumentsService\Mapper;
 
-use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\TradingScheduleRequestDto;
+use TInvest\Core\Component\TInvest\InstrumentsService\Dto\TradingScheduleRequestDto;
 
 final class TradingScheduleRequestMapper
 {

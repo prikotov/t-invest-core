@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Service\Operations;
+namespace TInvest\Core\Service\Operations;
 
 use DateTimeImmutable;
 use Generator;
-use TInvest\Skill\Service\Operations\Dto\OperationViewDto;
-use TInvest\Skill\Service\Operations\Dto\PortfolioViewDto;
+use TInvest\Core\Service\Operations\Dto\OperationViewDto;
+use TInvest\Core\Service\Operations\Dto\PortfolioViewDto;
 
 interface OperationsServiceInterface
 {

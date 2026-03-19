@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Service\Instruments;
+namespace TInvest\Core\Service\Instruments;
 
 use Override;
-use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\FindInstrumentRequestDto;
-use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\GetAssetFundamentalsRequestDto;
-use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\TradingScheduleRequestDto;
-use TInvest\Skill\Component\TInvest\InstrumentsService\InstrumentsServiceComponentInterface;
-use TInvest\Skill\Service\Instruments\Dto\AssetFundamentalViewDto;
-use TInvest\Skill\Service\Instruments\Dto\TradingDayViewDto;
-use TInvest\Skill\Service\Instruments\Dto\TradingScheduleViewDto;
+use TInvest\Core\Component\TInvest\InstrumentsService\Dto\FindInstrumentRequestDto;
+use TInvest\Core\Component\TInvest\InstrumentsService\Dto\GetAssetFundamentalsRequestDto;
+use TInvest\Core\Component\TInvest\InstrumentsService\Dto\TradingScheduleRequestDto;
+use TInvest\Core\Component\TInvest\InstrumentsService\InstrumentsServiceComponentInterface;
+use TInvest\Core\Service\Instruments\Dto\AssetFundamentalViewDto;
+use TInvest\Core\Service\Instruments\Dto\TradingDayViewDto;
+use TInvest\Core\Service\Instruments\Dto\TradingScheduleViewDto;
 
 final class InstrumentsService implements InstrumentsServiceInterface
 {

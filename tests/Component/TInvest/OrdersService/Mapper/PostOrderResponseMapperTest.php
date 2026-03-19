@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Tests\Component\TInvest\OrdersService\Mapper;
+namespace TInvest\Core\Tests\Component\TInvest\OrdersService\Mapper;
 
 use PHPUnit\Framework\TestCase;
-use TInvest\Skill\Component\TInvest\OrdersService\Mapper\PostOrderResponseMapper;
-use TInvest\Skill\Component\TInvest\Shared\Factory\MoneyFactory;
-use TInvest\Skill\Component\TInvest\Shared\Factory\QuotationFactory;
+use TInvest\Core\Component\TInvest\OrdersService\Mapper\PostOrderResponseMapper;
+use TInvest\Core\Component\TInvest\Shared\Factory\MoneyFactory;
+use TInvest\Core\Component\TInvest\Shared\Factory\QuotationFactory;
 
 final class PostOrderResponseMapperTest extends TestCase
 {

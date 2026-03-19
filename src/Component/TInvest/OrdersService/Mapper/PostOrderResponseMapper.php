@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Component\TInvest\OrdersService\Mapper;
+namespace TInvest\Core\Component\TInvest\OrdersService\Mapper;
 
-use TInvest\Skill\Component\TInvest\OrdersService\Dto\PostOrderResponseDto;
-use TInvest\Skill\Component\TInvest\Shared\Factory\MoneyFactory;
-use TInvest\Skill\Component\TInvest\Shared\Factory\QuotationFactory;
+use TInvest\Core\Component\TInvest\OrdersService\Dto\PostOrderResponseDto;
+use TInvest\Core\Component\TInvest\Shared\Factory\MoneyFactory;
+use TInvest\Core\Component\TInvest\Shared\Factory\QuotationFactory;
 
 final class PostOrderResponseMapper
 {

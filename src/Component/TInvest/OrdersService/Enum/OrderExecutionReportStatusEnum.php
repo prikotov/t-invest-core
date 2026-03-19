@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Component\TInvest\OrdersService\Enum;
+namespace TInvest\Core\Component\TInvest\OrdersService\Enum;
 
 enum OrderExecutionReportStatusEnum: int
 {

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Component\TInvest\UsersService\Mapper;
+namespace TInvest\Core\Component\TInvest\UsersService\Mapper;
 
 use Generator;
-use TInvest\Skill\Component\TInvest\Shared\Helper\DateTimeHelper;
-use TInvest\Skill\Component\TInvest\UsersService\Dto\AccountDto;
+use TInvest\Core\Component\TInvest\Shared\Helper\DateTimeHelper;
+use TInvest\Core\Component\TInvest\UsersService\Dto\AccountDto;
 
 final class GetAccountsResponseMapper
 {

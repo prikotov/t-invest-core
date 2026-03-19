@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Component\TInvest\Shared\Helper;
+namespace TInvest\Core\Component\TInvest\Shared\Helper;
 
 use DateTimeImmutable;
 

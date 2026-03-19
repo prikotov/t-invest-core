@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Component\TInvest\MarketDataService\Mapper;
+namespace TInvest\Core\Component\TInvest\MarketDataService\Mapper;
 
 use DateTimeImmutable;
-use TInvest\Skill\Component\TInvest\MarketDataService\Dto\GetLastPricesResponseDto;
-use TInvest\Skill\Component\TInvest\MarketDataService\Dto\LastPriceDto;
-use TInvest\Skill\Component\TInvest\Shared\Factory\QuotationFactory;
+use TInvest\Core\Component\TInvest\MarketDataService\Dto\GetLastPricesResponseDto;
+use TInvest\Core\Component\TInvest\MarketDataService\Dto\LastPriceDto;
+use TInvest\Core\Component\TInvest\Shared\Factory\QuotationFactory;
 
 final class LastPriceMapper
 {

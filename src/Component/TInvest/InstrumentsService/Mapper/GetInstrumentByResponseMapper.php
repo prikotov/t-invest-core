@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Component\TInvest\InstrumentsService\Mapper;
+namespace TInvest\Core\Component\TInvest\InstrumentsService\Mapper;
 
 use DateTimeImmutable;
-use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\InstrumentDto;
-use TInvest\Skill\Component\TInvest\Shared\Factory\QuantityFactory;
+use TInvest\Core\Component\TInvest\InstrumentsService\Dto\InstrumentDto;
+use TInvest\Core\Component\TInvest\Shared\Factory\QuantityFactory;
 
 final class GetInstrumentByResponseMapper
 {

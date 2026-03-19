@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Component\TInvest\OperationsService\Dto;
+namespace TInvest\Core\Component\TInvest\OperationsService\Dto;
 
 final readonly class GetOperationsResponseDto
 {

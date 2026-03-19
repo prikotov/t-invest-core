@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Component\TInvest\OrdersService\Dto;
+namespace TInvest\Core\Component\TInvest\OrdersService\Dto;
 
 use DateTimeImmutable;
-use TInvest\Skill\Component\TInvest\Shared\Dto\MoneyDto;
+use TInvest\Core\Component\TInvest\Shared\Dto\MoneyDto;
 
 final readonly class OrderStateDto
 {

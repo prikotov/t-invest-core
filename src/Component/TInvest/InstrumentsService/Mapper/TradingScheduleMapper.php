@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Component\TInvest\InstrumentsService\Mapper;
+namespace TInvest\Core\Component\TInvest\InstrumentsService\Mapper;
 
 use DateTimeImmutable;
 use DateTimeInterface;
-use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\TradingDayDto;
-use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\TradingScheduleDto;
+use TInvest\Core\Component\TInvest\InstrumentsService\Dto\TradingDayDto;
+use TInvest\Core\Component\TInvest\InstrumentsService\Dto\TradingScheduleDto;
 
 final class TradingScheduleMapper
 {

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Component\TInvest\Shared\Factory;
+namespace TInvest\Core\Component\TInvest\Shared\Factory;
 
-use TInvest\Skill\Component\TInvest\Shared\Dto\PercentDto;
-use TInvest\Skill\Component\TInvest\Shared\Helper\QuantityHelper;
+use TInvest\Core\Component\TInvest\Shared\Dto\PercentDto;
+use TInvest\Core\Component\TInvest\Shared\Helper\QuantityHelper;
 
 final class PercentFactory
 {

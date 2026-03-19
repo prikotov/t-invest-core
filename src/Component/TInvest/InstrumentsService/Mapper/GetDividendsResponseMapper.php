@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Component\TInvest\InstrumentsService\Mapper;
+namespace TInvest\Core\Component\TInvest\InstrumentsService\Mapper;
 
 use DateTimeImmutable;
 use Exception;
 use Generator;
-use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\DividendDto;
-use TInvest\Skill\Component\TInvest\Shared\Factory\MoneyFactory;
-use TInvest\Skill\Component\TInvest\Shared\Factory\QuotationFactory;
+use TInvest\Core\Component\TInvest\InstrumentsService\Dto\DividendDto;
+use TInvest\Core\Component\TInvest\Shared\Factory\MoneyFactory;
+use TInvest\Core\Component\TInvest\Shared\Factory\QuotationFactory;
 
 final class GetDividendsResponseMapper
 {

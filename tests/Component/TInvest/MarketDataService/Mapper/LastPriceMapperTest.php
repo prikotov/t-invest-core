@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Tests\Component\TInvest\MarketDataService\Mapper;
+namespace TInvest\Core\Tests\Component\TInvest\MarketDataService\Mapper;
 
 use PHPUnit\Framework\TestCase;
-use TInvest\Skill\Component\TInvest\MarketDataService\Mapper\LastPriceMapper;
-use TInvest\Skill\Component\TInvest\Shared\Factory\QuotationFactory;
+use TInvest\Core\Component\TInvest\MarketDataService\Mapper\LastPriceMapper;
+use TInvest\Core\Component\TInvest\Shared\Factory\QuotationFactory;
 
 final class LastPriceMapperTest extends TestCase
 {

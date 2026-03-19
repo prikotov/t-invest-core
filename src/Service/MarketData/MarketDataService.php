@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Service\MarketData;
+namespace TInvest\Core\Service\MarketData;
 
 use DateTimeImmutable;
 use Generator;
 use Override;
-use TInvest\Skill\Component\TInvest\MarketDataService\Dto\GetCandlesRequestDto;
-use TInvest\Skill\Component\TInvest\MarketDataService\Dto\GetLastPricesRequestDto;
-use TInvest\Skill\Component\TInvest\MarketDataService\Enum\CandleIntervalEnum;
-use TInvest\Skill\Component\TInvest\MarketDataService\MarketDataServiceComponentInterface;
-use TInvest\Skill\Service\MarketData\Dto\CandleViewDto;
-use TInvest\Skill\Service\MarketData\Dto\LastPriceViewDto;
+use TInvest\Core\Component\TInvest\MarketDataService\Dto\GetCandlesRequestDto;
+use TInvest\Core\Component\TInvest\MarketDataService\Dto\GetLastPricesRequestDto;
+use TInvest\Core\Component\TInvest\MarketDataService\Enum\CandleIntervalEnum;
+use TInvest\Core\Component\TInvest\MarketDataService\MarketDataServiceComponentInterface;
+use TInvest\Core\Service\MarketData\Dto\CandleViewDto;
+use TInvest\Core\Service\MarketData\Dto\LastPriceViewDto;
 
 final class MarketDataService implements MarketDataServiceInterface
 {

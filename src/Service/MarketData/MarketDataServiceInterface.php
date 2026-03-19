@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Service\MarketData;
+namespace TInvest\Core\Service\MarketData;
 
 use DateTimeImmutable;
 use Generator;
-use TInvest\Skill\Service\MarketData\Dto\CandleViewDto;
-use TInvest\Skill\Service\MarketData\Dto\LastPriceViewDto;
+use TInvest\Core\Service\MarketData\Dto\CandleViewDto;
+use TInvest\Core\Service\MarketData\Dto\LastPriceViewDto;
 
 interface MarketDataServiceInterface
 {

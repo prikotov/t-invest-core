@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Component\TInvest\OperationsService\Dto;
+namespace TInvest\Core\Component\TInvest\OperationsService\Dto;
 
 use DateTimeImmutable;
-use TInvest\Skill\Component\TInvest\OperationsService\Enum\OperationStateEnum;
-use TInvest\Skill\Component\TInvest\OperationsService\Enum\OperationTypeEnum;
-use TInvest\Skill\Component\TInvest\Shared\Dto\MoneyDto;
+use TInvest\Core\Component\TInvest\OperationsService\Enum\OperationStateEnum;
+use TInvest\Core\Component\TInvest\OperationsService\Enum\OperationTypeEnum;
+use TInvest\Core\Component\TInvest\Shared\Dto\MoneyDto;
 
 final readonly class OperationDto
 {

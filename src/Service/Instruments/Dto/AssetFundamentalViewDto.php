@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Service\Instruments\Dto;
+namespace TInvest\Core\Service\Instruments\Dto;
 
 final readonly class AssetFundamentalViewDto
 {

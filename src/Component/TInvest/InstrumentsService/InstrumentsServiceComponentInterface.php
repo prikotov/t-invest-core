@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Component\TInvest\InstrumentsService;
+namespace TInvest\Core\Component\TInvest\InstrumentsService;
 
 use Generator;
-use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\DividendDto;
-use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\FindInstrumentRequestDto;
-use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\FindInstrumentResponseDto;
-use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\GetAssetFundamentalsRequestDto;
-use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\GetAssetFundamentalsResponseDto;
-use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\InstrumentDto;
-use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\TradingScheduleDto;
-use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\TradingScheduleRequestDto;
-use TInvest\Skill\Component\TInvest\InstrumentsService\Request\GetDividendsRequestDto;
+use TInvest\Core\Component\TInvest\InstrumentsService\Dto\DividendDto;
+use TInvest\Core\Component\TInvest\InstrumentsService\Dto\FindInstrumentRequestDto;
+use TInvest\Core\Component\TInvest\InstrumentsService\Dto\FindInstrumentResponseDto;
+use TInvest\Core\Component\TInvest\InstrumentsService\Dto\GetAssetFundamentalsRequestDto;
+use TInvest\Core\Component\TInvest\InstrumentsService\Dto\GetAssetFundamentalsResponseDto;
+use TInvest\Core\Component\TInvest\InstrumentsService\Dto\InstrumentDto;
+use TInvest\Core\Component\TInvest\InstrumentsService\Dto\TradingScheduleDto;
+use TInvest\Core\Component\TInvest\InstrumentsService\Dto\TradingScheduleRequestDto;
+use TInvest\Core\Component\TInvest\InstrumentsService\Request\GetDividendsRequestDto;
 
 interface InstrumentsServiceComponentInterface
 {

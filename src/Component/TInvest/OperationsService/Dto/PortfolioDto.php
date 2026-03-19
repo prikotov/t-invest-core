@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Component\TInvest\OperationsService\Dto;
+namespace TInvest\Core\Component\TInvest\OperationsService\Dto;
 
-use TInvest\Skill\Component\TInvest\Shared\Dto\MoneyDto;
-use TInvest\Skill\Component\TInvest\Shared\Dto\PercentDto;
+use TInvest\Core\Component\TInvest\Shared\Dto\MoneyDto;
+use TInvest\Core\Component\TInvest\Shared\Dto\PercentDto;
 
 final readonly class PortfolioDto
 {

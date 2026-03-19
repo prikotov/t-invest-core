@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Tests\Component\TInvest\OperationsService\Mapper;
+namespace TInvest\Core\Tests\Component\TInvest\OperationsService\Mapper;
 
 use PHPUnit\Framework\TestCase;
-use TInvest\Skill\Component\TInvest\OperationsService\Enum\OperationStateEnum;
-use TInvest\Skill\Component\TInvest\OperationsService\Enum\OperationTypeEnum;
-use TInvest\Skill\Component\TInvest\OperationsService\Mapper\OperationMapper;
-use TInvest\Skill\Component\TInvest\Shared\Factory\MoneyFactory;
+use TInvest\Core\Component\TInvest\OperationsService\Enum\OperationStateEnum;
+use TInvest\Core\Component\TInvest\OperationsService\Enum\OperationTypeEnum;
+use TInvest\Core\Component\TInvest\OperationsService\Mapper\OperationMapper;
+use TInvest\Core\Component\TInvest\Shared\Factory\MoneyFactory;
 
 final class OperationMapperTest extends TestCase
 {

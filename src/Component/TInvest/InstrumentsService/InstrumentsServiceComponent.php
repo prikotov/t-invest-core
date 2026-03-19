@@ -2,30 +2,30 @@
 
 declare(strict_types=1);
 
-namespace TInvest\Skill\Component\TInvest\InstrumentsService;
+namespace TInvest\Core\Component\TInvest\InstrumentsService;
 
 use Generator;
 use GuzzleHttp\Client;
 use Override;
 use Psr\Log\LoggerInterface;
-use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\DividendDto;
-use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\FindInstrumentRequestDto;
-use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\FindInstrumentResponseDto;
-use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\GetAssetFundamentalsRequestDto;
-use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\GetAssetFundamentalsResponseDto;
-use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\InstrumentDto;
-use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\TradingScheduleDto;
-use TInvest\Skill\Component\TInvest\InstrumentsService\Dto\TradingScheduleRequestDto;
-use TInvest\Skill\Component\TInvest\InstrumentsService\Mapper\FindInstrumentRequestMapper;
-use TInvest\Skill\Component\TInvest\InstrumentsService\Mapper\FindInstrumentResponseMapper;
-use TInvest\Skill\Component\TInvest\InstrumentsService\Mapper\GetAssetFundamentalsRequestMapper;
-use TInvest\Skill\Component\TInvest\InstrumentsService\Mapper\GetAssetFundamentalsResponseMapper;
-use TInvest\Skill\Component\TInvest\InstrumentsService\Mapper\GetDividendsRequestMapper;
-use TInvest\Skill\Component\TInvest\InstrumentsService\Mapper\GetDividendsResponseMapper;
-use TInvest\Skill\Component\TInvest\InstrumentsService\Mapper\GetInstrumentByResponseMapper;
-use TInvest\Skill\Component\TInvest\InstrumentsService\Mapper\TradingScheduleMapper;
-use TInvest\Skill\Component\TInvest\InstrumentsService\Mapper\TradingScheduleRequestMapper;
-use TInvest\Skill\Component\TInvest\InstrumentsService\Request\GetDividendsRequestDto;
+use TInvest\Core\Component\TInvest\InstrumentsService\Dto\DividendDto;
+use TInvest\Core\Component\TInvest\InstrumentsService\Dto\FindInstrumentRequestDto;
+use TInvest\Core\Component\TInvest\InstrumentsService\Dto\FindInstrumentResponseDto;
+use TInvest\Core\Component\TInvest\InstrumentsService\Dto\GetAssetFundamentalsRequestDto;
+use TInvest\Core\Component\TInvest\InstrumentsService\Dto\GetAssetFundamentalsResponseDto;
+use TInvest\Core\Component\TInvest\InstrumentsService\Dto\InstrumentDto;
+use TInvest\Core\Component\TInvest\InstrumentsService\Dto\TradingScheduleDto;
+use TInvest\Core\Component\TInvest\InstrumentsService\Dto\TradingScheduleRequestDto;
+use TInvest\Core\Component\TInvest\InstrumentsService\Mapper\FindInstrumentRequestMapper;
+use TInvest\Core\Component\TInvest\InstrumentsService\Mapper\FindInstrumentResponseMapper;
+use TInvest\Core\Component\TInvest\InstrumentsService\Mapper\GetAssetFundamentalsRequestMapper;
+use TInvest\Core\Component\TInvest\InstrumentsService\Mapper\GetAssetFundamentalsResponseMapper;
+use TInvest\Core\Component\TInvest\InstrumentsService\Mapper\GetDividendsRequestMapper;
+use TInvest\Core\Component\TInvest\InstrumentsService\Mapper\GetDividendsResponseMapper;
+use TInvest\Core\Component\TInvest\InstrumentsService\Mapper\GetInstrumentByResponseMapper;
+use TInvest\Core\Component\TInvest\InstrumentsService\Mapper\TradingScheduleMapper;
+use TInvest\Core\Component\TInvest\InstrumentsService\Mapper\TradingScheduleRequestMapper;
+use TInvest\Core\Component\TInvest\InstrumentsService\Request\GetDividendsRequestDto;
 
 final class InstrumentsServiceComponent implements InstrumentsServiceComponentInterface
 {
