@@ -11,6 +11,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use TInvest\Core\Service\TickerResolver\TickerResolverInterface;
 use TInvest\Core\Service\MarketData\MarketDataServiceInterface;
 
 #[AsCommand(
@@ -21,6 +22,7 @@ final class OrderbookCommand extends Command
 {
     public function __construct(
         private readonly MarketDataServiceInterface $marketDataService,
+        private readonly TickerResolverInterface $tickerResolver,
     ) {
         parent::__construct();
     }
@@ -29,22 +31,28 @@ final class OrderbookCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addArgument('instrument', InputArgument::REQUIRED, 'Instrument ID (figi, instrumentUid or ticker)')
+            ->addArgument('ticker', InputArgument::REQUIRED, 'Ticker (e.g., SBER, GAZP)')
             ->addOption('depth', 'd', InputOption::VALUE_OPTIONAL, 'Order book depth (1-50)', '20');
     }
 
     #[Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $instrumentId = $input->getArgument('instrument');
+        $ticker = $input->getArgument('ticker');
         $depth = (int)$input->getOption('depth');
         $depth = max(1, min(50, $depth));
+
+        $instrumentId = $this->tickerResolver->resolve($ticker);
+        if ($instrumentId === null) {
+            $output->writeln(sprintf('<error>Cannot resolve ticker: %s</error>', $ticker));
+            return Command::FAILURE;
+        }
 
         $orderBook = $this->marketDataService->getOrderBook($instrumentId, $depth);
 
         $output->writeln(sprintf(
             '<info>Order Book for %s (depth: %d)</info>',
-            $instrumentId,
+            $ticker,
             $orderBook->depth
         ));
         $output->writeln(sprintf('<info>Time: %s</info>', $orderBook->time->format('Y-m-d H:i:s')));

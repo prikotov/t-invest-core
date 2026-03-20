@@ -10,6 +10,8 @@ final readonly class InstrumentShortDto
         public string $ticker,
         public string $uid,
         public string $instrumentType,
+        public string $classCode,
+        public bool $apiTradeAvailableFlag,
     ) {
     }
 }

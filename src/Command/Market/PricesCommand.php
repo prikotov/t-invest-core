@@ -10,6 +10,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use TInvest\Core\Service\TickerResolver\TickerResolverInterface;
 use TInvest\Core\Service\MarketData\MarketDataServiceInterface;
 
 #[AsCommand(
@@ -20,6 +21,7 @@ final class PricesCommand extends Command
 {
     public function __construct(
         private readonly MarketDataServiceInterface $marketDataService,
+        private readonly TickerResolverInterface $tickerResolver,
     ) {
         parent::__construct();
     }
@@ -29,17 +31,24 @@ final class PricesCommand extends Command
     {
         $this
             ->addArgument(
-                'instruments',
+                'tickers',
                 InputArgument::IS_ARRAY | InputArgument::REQUIRED,
-                'Instrument IDs (figi, instrumentUid or ticker)'
+                'Tickers (e.g., SBER GAZP)'
             );
     }
 
     #[Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        /** @var array<string> $instrumentIds */
-        $instrumentIds = $input->getArgument('instruments');
+        /** @var array<string> $tickers */
+        $tickers = $input->getArgument('tickers');
+
+        $instrumentIds = $this->tickerResolver->resolveBatch($tickers);
+
+        if ($instrumentIds === []) {
+            $output->writeln('<error>Cannot resolve any tickers</error>');
+            return Command::FAILURE;
+        }
 
         $prices = [];
         foreach ($this->marketDataService->getLastPrices($instrumentIds) as $price) {
