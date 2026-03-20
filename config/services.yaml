@@ -3,6 +3,8 @@ parameters:
     tinvest.account_id: '%env(TINVEST_ACCOUNT_ID)%'
     tinvest.base_url: '%env(TINVEST_BASE_URL)%'
     log.level: '%env(LOG_LEVEL)%'
+    cache.directory: '%kernel.project_dir%/var/cache/t-invest-core'
+    cache.ttl: 86400
 
 services:
     _defaults:
@@ -42,3 +44,10 @@ services:
         arguments:
             $stream: '%kernel.project_dir%/var/log/t-invest-core/app.log'
             $level: '%log.level%'
+
+    Symfony\Contracts\Cache\CacheInterface:
+        class: Symfony\Component\Cache\Adapter\FilesystemAdapter
+        arguments:
+            $namespace: 'tinvest_resolver'
+            $defaultLifetime: '%cache.ttl%'
+            $directory: '%cache.directory%'

@@ -6,6 +6,7 @@ namespace TInvest\Core\Service\Instruments;
 
 use DateTimeImmutable;
 use Override;
+use Symfony\Contracts\Cache\CacheInterface;
 use TInvest\Core\Component\TInvest\InstrumentsService\Dto\FindInstrumentRequestDto;
 use TInvest\Core\Component\TInvest\InstrumentsService\Dto\GetAssetFundamentalsRequestDto;
 use TInvest\Core\Component\TInvest\InstrumentsService\Dto\GetAssetReportsRequestDto;
@@ -22,27 +23,24 @@ use TInvest\Core\Service\Instruments\Dto\TradingScheduleViewDto;
 
 final class InstrumentsService implements InstrumentsServiceInterface
 {
+    private const CACHE_PREFIX = 'tinvest_instrument_';
+
     public function __construct(
         private readonly InstrumentsServiceComponentInterface $component,
+        private readonly CacheInterface $cache,
     ) {
+    }
+
+    #[Override]
+    public function getInstrumentUidByTicker(string $ticker): ?string
+    {
+        return $this->findBestInstrumentUid($ticker);
     }
 
     #[Override]
     public function getAssetUidByTicker(string $ticker): ?string
     {
-        $findResponse = $this->component->findInstrument(new FindInstrumentRequestDto($ticker));
-
-        $uid = null;
-        foreach ($findResponse->instruments as $instrument) {
-            if ($instrument->ticker === $ticker) {
-                $uid = $instrument->uid;
-                break;
-            }
-        }
-
-        if ($uid === null && $findResponse->instruments !== []) {
-            $uid = $findResponse->instruments[0]->uid;
-        }
+        $uid = $this->findBestInstrumentUid($ticker);
 
         if ($uid === null) {
             return null;
@@ -62,19 +60,7 @@ final class InstrumentsService implements InstrumentsServiceInterface
     #[Override]
     public function getFigiByTicker(string $ticker): ?string
     {
-        $findResponse = $this->component->findInstrument(new FindInstrumentRequestDto($ticker));
-
-        $uid = null;
-        foreach ($findResponse->instruments as $instrument) {
-            if ($instrument->ticker === $ticker) {
-                $uid = $instrument->uid;
-                break;
-            }
-        }
-
-        if ($uid === null && $findResponse->instruments !== []) {
-            $uid = $findResponse->instruments[0]->uid;
-        }
+        $uid = $this->findBestInstrumentUid($ticker);
 
         if ($uid === null) {
             return null;
@@ -82,6 +68,47 @@ final class InstrumentsService implements InstrumentsServiceInterface
 
         $instrument = $this->component->getInstrumentBy($uid, 'INSTRUMENT_ID_TYPE_UID');
         return $instrument->figi;
+    }
+
+    #[Override]
+    public function getTickerByFigi(string $figi): ?string
+    {
+        $cacheKey = self::CACHE_PREFIX . 'figi_' . strtolower($figi);
+
+        return $this->cache->get($cacheKey, function () use ($figi): ?string {
+            $instrument = $this->component->getInstrumentBy($figi, 'INSTRUMENT_ID_TYPE_FIGI');
+            return $instrument->ticker;
+        });
+    }
+
+    private function findBestInstrumentUid(string $ticker): ?string
+    {
+        $findResponse = $this->component->findInstrument(new FindInstrumentRequestDto($ticker));
+
+        $fallback = null;
+        foreach ($findResponse->instruments as $instrument) {
+            if ($instrument->ticker !== $ticker) {
+                continue;
+            }
+
+            if ($instrument->classCode === 'TQBR') {
+                return $instrument->uid;
+            }
+
+            if ($instrument->apiTradeAvailableFlag && $fallback === null) {
+                $fallback = $instrument->uid;
+            }
+        }
+
+        if ($fallback !== null) {
+            return $fallback;
+        }
+
+        if ($findResponse->instruments !== []) {
+            return $findResponse->instruments[0]->uid;
+        }
+
+        return null;
     }
 
     #[Override]

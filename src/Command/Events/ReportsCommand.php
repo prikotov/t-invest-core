@@ -12,6 +12,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use TInvest\Core\Service\Instruments\InstrumentsServiceInterface;
+use TInvest\Core\Service\TickerResolver\TickerResolverInterface;
 
 #[AsCommand(
     name: 'events:reports',
@@ -21,6 +22,7 @@ final class ReportsCommand extends Command
 {
     public function __construct(
         private readonly InstrumentsServiceInterface $instrumentsService,
+        private readonly TickerResolverInterface $tickerResolver,
     ) {
         parent::__construct();
     }
@@ -30,6 +32,7 @@ final class ReportsCommand extends Command
     {
         $this
             ->addOption('ticker', 't', InputOption::VALUE_REQUIRED, 'Instrument ticker')
+            ->addOption('figi', null, InputOption::VALUE_REQUIRED, 'Instrument FIGI')
             ->addOption('from', null, InputOption::VALUE_OPTIONAL, 'From date (YYYY-MM-DD)')
             ->addOption('to', null, InputOption::VALUE_OPTIONAL, 'To date (YYYY-MM-DD)');
     }
@@ -38,9 +41,39 @@ final class ReportsCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $ticker = $input->getOption('ticker');
-        if (!is_string($ticker) || $ticker === '') {
-            $output->writeln('<error>--ticker is required</error>');
+        $figi = $input->getOption('figi');
+
+        $ticker = is_string($ticker) && $ticker !== '' ? $ticker : null;
+        $figi = is_string($figi) && $figi !== '' ? $figi : null;
+
+        if ($ticker === null && $figi === null) {
+            $output->writeln('<error>--ticker or --figi is required</error>');
             return Command::FAILURE;
+        }
+
+        if ($ticker !== null && $figi !== null) {
+            $resolvedTicker = $this->tickerResolver->resolveFigiToTicker($figi);
+            if ($resolvedTicker === null) {
+                $output->writeln(sprintf('<error>Cannot resolve FIGI %s</error>', $figi));
+                return Command::FAILURE;
+            }
+            if ($resolvedTicker !== $ticker) {
+                $output->writeln(sprintf(
+                    '<error>FIGI %s resolves to ticker %s, not %s</error>',
+                    $figi,
+                    $resolvedTicker,
+                    $ticker,
+                ));
+                return Command::FAILURE;
+            }
+        }
+
+        if ($ticker === null && $figi !== null) {
+            $ticker = $this->tickerResolver->resolveFigiToTicker($figi);
+            if ($ticker === null) {
+                $output->writeln(sprintf('<error>Cannot resolve FIGI %s to ticker</error>', $figi));
+                return Command::FAILURE;
+            }
         }
 
         $from = $input->getOption('from');
