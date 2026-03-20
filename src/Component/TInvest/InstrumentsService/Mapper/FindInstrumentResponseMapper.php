@@ -20,6 +20,8 @@ final readonly class FindInstrumentResponseMapper
                 ticker: (string)($item['ticker'] ?? ''),
                 uid: (string)($item['uid'] ?? ''),
                 instrumentType: (string)($item['instrumentType'] ?? ''),
+                classCode: (string)($item['classCode'] ?? ''),
+                apiTradeAvailableFlag: (bool)($item['apiTradeAvailableFlag'] ?? false),
             );
         }
 

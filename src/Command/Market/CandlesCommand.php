@@ -12,6 +12,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use TInvest\Core\Service\TickerResolver\TickerResolverInterface;
 use TInvest\Core\Service\MarketData\MarketDataServiceInterface;
 
 #[AsCommand(
@@ -22,6 +23,7 @@ final class CandlesCommand extends Command
 {
     public function __construct(
         private readonly MarketDataServiceInterface $marketDataService,
+        private readonly TickerResolverInterface $tickerResolver,
     ) {
         parent::__construct();
     }
@@ -30,7 +32,7 @@ final class CandlesCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addArgument('instrument', InputArgument::REQUIRED, 'Instrument ID (figi, instrumentUid or ticker)')
+            ->addArgument('ticker', InputArgument::REQUIRED, 'Ticker (e.g., SBER, GAZP)')
             ->addOption('from', 'f', InputOption::VALUE_OPTIONAL, 'Start date (Y-m-d)', '-7 days')
             ->addOption('to', 't', InputOption::VALUE_OPTIONAL, 'End date (Y-m-d)', 'now')
             ->addOption('interval', 'i', InputOption::VALUE_OPTIONAL, 'Candle interval', '1h')
@@ -40,11 +42,17 @@ final class CandlesCommand extends Command
     #[Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $instrumentId = $input->getArgument('instrument');
+        $ticker = $input->getArgument('ticker');
         $fromStr = $input->getOption('from');
         $toStr = $input->getOption('to');
         $intervalStr = $input->getOption('interval');
         $limit = (int)$input->getOption('limit');
+
+        $instrumentId = $this->tickerResolver->resolve($ticker);
+        if ($instrumentId === null) {
+            $output->writeln(sprintf('<error>Cannot resolve ticker: %s</error>', $ticker));
+            return Command::FAILURE;
+        }
 
         $from = new DateTimeImmutable($fromStr);
         $to = new DateTimeImmutable($toStr);
@@ -61,7 +69,7 @@ final class CandlesCommand extends Command
 
         $output->writeln(sprintf(
             '<info>Candles for %s (%s to %s):</info>',
-            $instrumentId,
+            $ticker,
             $from->format('Y-m-d H:i'),
             $to->format('Y-m-d H:i')
         ));

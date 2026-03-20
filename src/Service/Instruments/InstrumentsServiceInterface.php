@@ -13,6 +13,8 @@ use TInvest\Core\Service\Instruments\Dto\TradingScheduleViewDto;
 
 interface InstrumentsServiceInterface
 {
+    public function getInstrumentUidByTicker(string $ticker): ?string;
+
     public function getAssetUidByTicker(string $ticker): ?string;
 
     public function getTickerByAssetUid(string $assetUid): string;
