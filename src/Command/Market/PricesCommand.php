@@ -9,7 +9,9 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use TInvest\Core\Helper\OutputFormatTrait;
 use TInvest\Core\Service\TickerResolver\TickerResolverInterface;
 use TInvest\Core\Service\MarketData\MarketDataServiceInterface;
 
@@ -19,6 +21,8 @@ use TInvest\Core\Service\MarketData\MarketDataServiceInterface;
 )]
 final class PricesCommand extends Command
 {
+    use OutputFormatTrait;
+
     public function __construct(
         private readonly MarketDataServiceInterface $marketDataService,
         private readonly TickerResolverInterface $tickerResolver,
@@ -34,7 +38,8 @@ final class PricesCommand extends Command
                 'tickers',
                 InputArgument::IS_ARRAY | InputArgument::REQUIRED,
                 'Tickers (e.g., SBER GAZP)'
-            );
+            )
+            ->addOption('format', 'f', InputOption::VALUE_OPTIONAL, 'Output format: table, json, csv, md', 'table');
     }
 
     #[Override]
@@ -42,6 +47,7 @@ final class PricesCommand extends Command
     {
         /** @var array<string> $tickers */
         $tickers = $input->getArgument('tickers');
+        $format = $this->getFormat($input);
 
         $instrumentIds = $this->tickerResolver->resolveTickersToUids($tickers);
 
@@ -58,6 +64,23 @@ final class PricesCommand extends Command
         if ($prices === []) {
             $output->writeln('<comment>No prices found</comment>');
             return Command::SUCCESS;
+        }
+
+        if ($format !== 'table') {
+            $rows = array_map(fn($lastPrice) => [
+                $lastPrice->figi,
+                $lastPrice->ticker ?? 'N/A',
+                number_format($lastPrice->price, 2),
+                $lastPrice->time?->format('Y-m-d H:i:s') ?? 'N/A',
+            ], $prices);
+
+            return $this->outputFormat(
+                $output,
+                $format,
+                ['FIGI', 'Ticker', 'Price', 'Time'],
+                $rows,
+                'Last Prices'
+            );
         }
 
         $output->writeln('<info>Last prices:</info>');

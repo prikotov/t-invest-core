@@ -24,7 +24,7 @@ final class GetBondEventsResponseMapper
      */
     public function map(string $json): Generator
     {
-        /** @var array{events: array<int, array<string, mixed>>} $data */
+        /** @var array{events?: array<int, array<string, mixed>>} $data */
         $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
 
         /** @var array<string, mixed> $item */

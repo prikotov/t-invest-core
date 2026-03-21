@@ -10,6 +10,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use TInvest\Core\Helper\OutputFormatTrait;
 use TInvest\Core\Service\Operations\OperationsServiceInterface;
 
 #[AsCommand(
@@ -18,6 +19,8 @@ use TInvest\Core\Service\Operations\OperationsServiceInterface;
 )]
 final class ShowCommand extends Command
 {
+    use OutputFormatTrait;
+
     public function __construct(
         private readonly OperationsServiceInterface $operationsService,
     ) {
@@ -27,13 +30,16 @@ final class ShowCommand extends Command
     #[Override]
     protected function configure(): void
     {
-        $this->addOption('ticker', 't', InputOption::VALUE_OPTIONAL, 'Filter by ticker');
+        $this
+            ->addOption('ticker', 't', InputOption::VALUE_OPTIONAL, 'Filter by ticker')
+            ->addOption('format', 'f', InputOption::VALUE_OPTIONAL, 'Output format: table, json, csv, md', 'table');
     }
 
     #[Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $ticker = $input->getOption('ticker');
+        $format = $this->getFormat($input);
         $portfolio = $this->operationsService->getPortfolio($ticker);
 
         if ($portfolio->positions === []) {
@@ -42,6 +48,25 @@ final class ShowCommand extends Command
                 : '<comment>No positions found</comment>';
             $output->writeln($message);
             return Command::SUCCESS;
+        }
+
+        if ($format !== 'table') {
+            $rows = array_map(fn($position) => [
+                $position->ticker,
+                $position->instrumentType,
+                number_format($position->quantity, 2),
+                number_format($position->avgPrice, 2),
+                number_format($position->expectedYield, 2),
+                number_format($position->currentPrice, 2),
+            ], $portfolio->positions);
+
+            return $this->outputFormat(
+                $output,
+                $format,
+                ['Ticker', 'Type', 'Quantity', 'AvgPrice', 'Yield%', 'CurrentPrice'],
+                $rows,
+                'Portfolio'
+            );
         }
 
         $output->writeln('<info>Portfolio:</info>');

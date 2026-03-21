@@ -11,6 +11,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use TInvest\Core\Helper\OutputFormatTrait;
 use TInvest\Core\Service\Operations\OperationsServiceInterface;
 
 #[AsCommand(
@@ -19,6 +20,8 @@ use TInvest\Core\Service\Operations\OperationsServiceInterface;
 )]
 final class HistoryCommand extends Command
 {
+    use OutputFormatTrait;
+
     public function __construct(
         private readonly OperationsServiceInterface $operationsService,
     ) {
@@ -32,7 +35,8 @@ final class HistoryCommand extends Command
             ->addOption('from', 'f', InputOption::VALUE_OPTIONAL, 'Start date (Y-m-d)', '-30 days')
             ->addOption('to', 't', InputOption::VALUE_OPTIONAL, 'End date (Y-m-d)', 'now')
             ->addOption('state', 's', InputOption::VALUE_OPTIONAL, 'Operation state (executed, canceled, progress)')
-            ->addOption('figi', null, InputOption::VALUE_OPTIONAL, 'Filter by FIGI');
+            ->addOption('figi', null, InputOption::VALUE_OPTIONAL, 'Filter by FIGI')
+            ->addOption('format', 'F', InputOption::VALUE_OPTIONAL, 'Output format: table, json, csv, md', 'table');
     }
 
     #[Override]
@@ -42,6 +46,7 @@ final class HistoryCommand extends Command
         $toStr = $input->getOption('to');
         $stateStr = $input->getOption('state');
         $figi = $input->getOption('figi');
+        $format = $this->getFormat($input);
 
         $from = new DateTimeImmutable($fromStr);
         $to = new DateTimeImmutable($toStr);
@@ -54,6 +59,26 @@ final class HistoryCommand extends Command
         if ($operations === []) {
             $output->writeln('<comment>No operations found</comment>');
             return Command::SUCCESS;
+        }
+
+        if ($format !== 'table') {
+            $rows = array_map(fn($operation) => [
+                $operation->date?->format('Y-m-d H:i') ?? 'N/A',
+                $operation->type,
+                $operation->state,
+                number_format($operation->payment, 2),
+                $operation->price !== null ? number_format($operation->price, 2) : '',
+                (string)$operation->quantity,
+                $operation->instrument,
+            ], $operations);
+
+            return $this->outputFormat(
+                $output,
+                $format,
+                ['Date', 'Type', 'State', 'Payment', 'Price', 'Qty', 'Instrument'],
+                $rows,
+                sprintf('Operations (%s to %s)', $from->format('Y-m-d'), $to->format('Y-m-d'))
+            );
         }
 
         $output->writeln(sprintf(

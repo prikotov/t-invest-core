@@ -11,6 +11,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use TInvest\Core\Helper\OutputFormatTrait;
 use TInvest\Core\Service\TickerResolver\TickerResolverInterface;
 use TInvest\Core\Service\MarketData\MarketDataServiceInterface;
 
@@ -20,6 +21,8 @@ use TInvest\Core\Service\MarketData\MarketDataServiceInterface;
 )]
 final class CandlesCommand extends Command
 {
+    use OutputFormatTrait;
+
     public function __construct(
         private readonly MarketDataServiceInterface $marketDataService,
         private readonly TickerResolverInterface $tickerResolver,
@@ -36,7 +39,8 @@ final class CandlesCommand extends Command
             ->addOption('from', 'f', InputOption::VALUE_OPTIONAL, 'Start date (Y-m-d)', '-7 days')
             ->addOption('to', null, InputOption::VALUE_OPTIONAL, 'End date (Y-m-d)', 'now')
             ->addOption('interval', 'i', InputOption::VALUE_OPTIONAL, 'Candle interval', '1h')
-            ->addOption('limit', 'l', InputOption::VALUE_OPTIONAL, 'Max candles', '100');
+            ->addOption('limit', 'l', InputOption::VALUE_OPTIONAL, 'Max candles', '100')
+            ->addOption('format', 'F', InputOption::VALUE_OPTIONAL, 'Output format: table, json, csv, md', 'table');
     }
 
     #[Override]
@@ -82,6 +86,7 @@ final class CandlesCommand extends Command
         $toStr = $input->getOption('to');
         $intervalStr = $input->getOption('interval');
         $limit = (int)$input->getOption('limit');
+        $format = $this->getFormat($input);
 
         $instrumentId = $this->tickerResolver->resolveTickerToUid($ticker);
         if ($instrumentId === null) {
@@ -100,6 +105,25 @@ final class CandlesCommand extends Command
         if ($candles === []) {
             $output->writeln('<comment>No candles found</comment>');
             return Command::SUCCESS;
+        }
+
+        if ($format !== 'table') {
+            $rows = array_map(fn($candle) => [
+                $candle->time->format('Y-m-d H:i:s'),
+                number_format($candle->open, 2),
+                number_format($candle->high, 2),
+                number_format($candle->low, 2),
+                number_format($candle->close, 2),
+                (string)$candle->volume,
+            ], $candles);
+
+            return $this->outputFormat(
+                $output,
+                $format,
+                ['Time', 'Open', 'High', 'Low', 'Close', 'Volume'],
+                $rows,
+                sprintf('Candles for %s', $ticker)
+            );
         }
 
         $output->writeln(sprintf(

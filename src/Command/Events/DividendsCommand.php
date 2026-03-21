@@ -11,6 +11,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use TInvest\Core\Helper\OutputFormatTrait;
 use TInvest\Core\Service\Instruments\InstrumentsServiceInterface;
 use TInvest\Core\Service\TickerResolver\TickerResolverInterface;
 
@@ -20,6 +21,8 @@ use TInvest\Core\Service\TickerResolver\TickerResolverInterface;
 )]
 final class DividendsCommand extends Command
 {
+    use OutputFormatTrait;
+
     public function __construct(
         private readonly InstrumentsServiceInterface $instrumentsService,
         private readonly TickerResolverInterface $tickerResolver,
@@ -37,7 +40,8 @@ final class DividendsCommand extends Command
             ->addOption('to', null, InputOption::VALUE_OPTIONAL, 'To date (YYYY-MM-DD)')
             ->addOption('sort', 's', InputOption::VALUE_OPTIONAL, 'Sort field (date, yield, amount)', 'date')
             ->addOption('order', 'o', InputOption::VALUE_OPTIONAL, 'Sort order (asc, desc)', 'desc')
-            ->addOption('limit', 'l', InputOption::VALUE_OPTIONAL, 'Limit results', '0');
+            ->addOption('limit', 'l', InputOption::VALUE_OPTIONAL, 'Limit results', '0')
+            ->addOption('format', 'f', InputOption::VALUE_OPTIONAL, 'Output format: table, json, csv, md', 'table');
     }
 
     #[Override]
@@ -81,6 +85,7 @@ final class DividendsCommand extends Command
 
         $from = $input->getOption('from');
         $to = $input->getOption('to');
+        $format = $this->getFormat($input);
 
         $fromDate = is_string($from) ? new DateTimeImmutable($from) : null;
         $toDate = is_string($to) ? new DateTimeImmutable($to) : null;
@@ -110,6 +115,26 @@ final class DividendsCommand extends Command
 
         if ($limit > 0) {
             $dividends = array_slice($dividends, 0, $limit);
+        }
+
+        if ($format !== 'table') {
+            $rows = array_map(fn($dividend) => [
+                $dividend->recordDate?->format('Y-m-d') ?? 'N/A',
+                $dividend->dividendNet !== null ? number_format($dividend->dividendNet, 2) : 'N/A',
+                $dividend->currency ?? 'N/A',
+                $dividend->yieldValue !== null ? number_format($dividend->yieldValue, 2) : 'N/A',
+                $dividend->lastBuyDate?->format('Y-m-d') ?? '',
+                $dividend->paymentDate?->format('Y-m-d') ?? '',
+                $dividend->dividendType,
+            ], $dividends);
+
+            return $this->outputFormat(
+                $output,
+                $format,
+                ['RecordDate', 'NetAmount', 'Currency', 'Yield%', 'LastBuyDate', 'PaymentDate', 'Type'],
+                $rows,
+                sprintf('Dividends for %s', $ticker)
+            );
         }
 
         $output->writeln(sprintf('<info>Dividends for %s</info>', $ticker));

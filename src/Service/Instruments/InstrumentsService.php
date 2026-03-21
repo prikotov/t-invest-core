@@ -18,6 +18,7 @@ use TInvest\Core\Service\Instruments\Dto\AssetFundamentalViewDto;
 use TInvest\Core\Service\Instruments\Dto\AssetReportViewDto;
 use TInvest\Core\Service\Instruments\Dto\BondEventViewDto;
 use TInvest\Core\Service\Instruments\Dto\DividendViewDto;
+use TInvest\Core\Service\Instruments\Dto\InstrumentSearchDto;
 use TInvest\Core\Service\Instruments\Dto\TradingDayViewDto;
 use TInvest\Core\Service\Instruments\Dto\TradingScheduleViewDto;
 
@@ -29,6 +30,25 @@ final class InstrumentsService implements InstrumentsServiceInterface
         private readonly InstrumentsServiceComponentInterface $component,
         private readonly CacheInterface $cache,
     ) {
+    }
+
+    #[Override]
+    public function search(string $query): array
+    {
+        $findResponse = $this->component->findInstrument(new FindInstrumentRequestDto($query));
+
+        $result = [];
+        foreach ($findResponse->instruments as $instrument) {
+            $result[] = new InstrumentSearchDto(
+                ticker: $instrument->ticker,
+                uid: $instrument->uid,
+                instrumentType: $instrument->instrumentType,
+                classCode: $instrument->classCode,
+                apiTradeAvailableFlag: $instrument->apiTradeAvailableFlag,
+            );
+        }
+
+        return $result;
     }
 
     #[Override]
@@ -75,7 +95,7 @@ final class InstrumentsService implements InstrumentsServiceInterface
     {
         $cacheKey = self::CACHE_PREFIX . 'figi_' . strtolower($figi);
 
-        return $this->cache->get($cacheKey, function () use ($figi): ?string {
+        return $this->cache->get($cacheKey, function () use ($figi): string {
             $instrument = $this->component->getInstrumentBy($figi, 'INSTRUMENT_ID_TYPE_FIGI');
             return $instrument->ticker;
         });

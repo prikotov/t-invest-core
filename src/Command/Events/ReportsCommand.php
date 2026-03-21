@@ -11,6 +11,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use TInvest\Core\Helper\OutputFormatTrait;
 use TInvest\Core\Service\Instruments\InstrumentsServiceInterface;
 use TInvest\Core\Service\TickerResolver\TickerResolverInterface;
 
@@ -20,6 +21,8 @@ use TInvest\Core\Service\TickerResolver\TickerResolverInterface;
 )]
 final class ReportsCommand extends Command
 {
+    use OutputFormatTrait;
+
     public function __construct(
         private readonly InstrumentsServiceInterface $instrumentsService,
         private readonly TickerResolverInterface $tickerResolver,
@@ -36,7 +39,8 @@ final class ReportsCommand extends Command
             ->addOption('from', null, InputOption::VALUE_OPTIONAL, 'From date (YYYY-MM-DD)')
             ->addOption('to', null, InputOption::VALUE_OPTIONAL, 'To date (YYYY-MM-DD)')
             ->addOption('order', 'o', InputOption::VALUE_OPTIONAL, 'Sort order (asc, desc)', 'desc')
-            ->addOption('limit', 'l', InputOption::VALUE_OPTIONAL, 'Limit results', '0');
+            ->addOption('limit', 'l', InputOption::VALUE_OPTIONAL, 'Limit results', '0')
+            ->addOption('format', 'f', InputOption::VALUE_OPTIONAL, 'Output format: table, json, csv, md', 'table');
     }
 
     #[Override]
@@ -80,6 +84,7 @@ final class ReportsCommand extends Command
 
         $from = $input->getOption('from');
         $to = $input->getOption('to');
+        $format = $this->getFormat($input);
 
         $fromDate = is_string($from) ? new DateTimeImmutable($from) : null;
         $toDate = is_string($to) ? new DateTimeImmutable($to) : null;
@@ -100,6 +105,23 @@ final class ReportsCommand extends Command
 
         if ($limit > 0) {
             $reports = array_slice($reports, 0, $limit);
+        }
+
+        if ($format !== 'table') {
+            $rows = array_map(fn($report) => [
+                $report->reportDate?->format('Y-m-d') ?? 'TBD',
+                $report->periodType,
+                (string)$report->periodYear,
+                (string)$report->periodNum,
+            ], $reports);
+
+            return $this->outputFormat(
+                $output,
+                $format,
+                ['Date', 'PeriodType', 'Year', 'Quarter'],
+                $rows,
+                sprintf('Report calendar for %s', $ticker)
+            );
         }
 
         $output->writeln(sprintf('<info>Report calendar for %s</info>', $ticker));

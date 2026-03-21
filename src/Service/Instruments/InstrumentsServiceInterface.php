@@ -9,10 +9,16 @@ use TInvest\Core\Service\Instruments\Dto\AssetFundamentalViewDto;
 use TInvest\Core\Service\Instruments\Dto\AssetReportViewDto;
 use TInvest\Core\Service\Instruments\Dto\BondEventViewDto;
 use TInvest\Core\Service\Instruments\Dto\DividendViewDto;
+use TInvest\Core\Service\Instruments\Dto\InstrumentSearchDto;
 use TInvest\Core\Service\Instruments\Dto\TradingScheduleViewDto;
 
 interface InstrumentsServiceInterface
 {
+    /**
+     * @return array<InstrumentSearchDto>
+     */
+    public function search(string $query): array;
+
     public function getInstrumentUidByTicker(string $ticker): ?string;
 
     public function getAssetUidByTicker(string $ticker): ?string;

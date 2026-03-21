@@ -33,7 +33,29 @@ CLI утилита для работы с T-Invest API (Т-Инвестиции)
 ## Команды
 
 ```bash
-./bin/t-invest portfolio:positions
+./bin/t-invest portfolio:show
+./bin/t-invest market:prices SBER GAZP
+./bin/t-invest market:candles --ticker SBER
+./bin/t-invest market:orderbook --ticker SBER
+./bin/t-invest instruments:search SBER
+./bin/t-invest instruments:fundamentals SBER
+./bin/t-invest operations:history
+./bin/t-invest events:dividends --ticker SBER
+./bin/t-invest events:bonds --ticker SU26238RMFS
+./bin/t-invest events:reports --ticker SBER
+```
+
+## Форматы вывода
+
+Все команды поддерживают `--format`:
+- `md` (по умолчанию) - Markdown таблица
+- `json` - JSON массив объектов
+- `csv` - CSV с заголовком
+- `text` - ASCII-таблица
+
+```bash
+./bin/t-invest portfolio:show              # md
+./bin/t-invest portfolio:show --format csv
 ```
 
 ## Архитектура

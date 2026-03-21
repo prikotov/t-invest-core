@@ -11,6 +11,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use TInvest\Core\Helper\OutputFormatTrait;
 use TInvest\Core\Service\Instruments\InstrumentsServiceInterface;
 use TInvest\Core\Service\TickerResolver\TickerResolverInterface;
 
@@ -20,6 +21,8 @@ use TInvest\Core\Service\TickerResolver\TickerResolverInterface;
 )]
 final class BondsCommand extends Command
 {
+    use OutputFormatTrait;
+
     public function __construct(
         private readonly InstrumentsServiceInterface $instrumentsService,
         private readonly TickerResolverInterface $tickerResolver,
@@ -38,7 +41,8 @@ final class BondsCommand extends Command
             ->addOption('to', null, InputOption::VALUE_OPTIONAL, 'To date (YYYY-MM-DD)')
             ->addOption('sort', 's', InputOption::VALUE_OPTIONAL, 'Sort field (date, amount)', 'date')
             ->addOption('order', 'o', InputOption::VALUE_OPTIONAL, 'Sort order (asc, desc)', 'desc')
-            ->addOption('limit', 'l', InputOption::VALUE_OPTIONAL, 'Limit results', '0');
+            ->addOption('limit', 'l', InputOption::VALUE_OPTIONAL, 'Limit results', '0')
+            ->addOption('format', 'f', InputOption::VALUE_OPTIONAL, 'Output format: table, json, csv, md', 'table');
     }
 
     #[Override]
@@ -83,6 +87,7 @@ final class BondsCommand extends Command
         $type = $input->getOption('type');
         $from = $input->getOption('from');
         $to = $input->getOption('to');
+        $format = $this->getFormat($input);
 
         $eventType = is_string($type) && $type !== '' ? 'EVENT_TYPE_' . $type : null;
         $fromDate = is_string($from) ? new DateTimeImmutable($from) : null;
@@ -112,6 +117,26 @@ final class BondsCommand extends Command
 
         if ($limit > 0) {
             $events = array_slice($events, 0, $limit);
+        }
+
+        if ($format !== 'table') {
+            $rows = array_map(fn($event) => [
+                $event->eventDate?->format('Y-m-d') ?? 'TBD',
+                (string)$event->eventNumber,
+                str_replace('EVENT_TYPE_', '', $event->eventType),
+                $event->payOneBond !== null ? number_format($event->payOneBond, 2) : '',
+                $event->currency ?? '',
+                $event->couponPeriod !== null ? (string)$event->couponPeriod : '',
+                $event->couponInterestRate !== null ? number_format($event->couponInterestRate, 2) : '',
+            ], $events);
+
+            return $this->outputFormat(
+                $output,
+                $format,
+                ['Date', '#', 'Type', 'Payment', 'Currency', 'Period', 'Rate'],
+                $rows,
+                sprintf('Bond events for %s', $ticker)
+            );
         }
 
         $output->writeln(sprintf('<info>Bond events for %s</info>', $ticker));
