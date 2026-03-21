@@ -36,7 +36,7 @@ final class BondsCommand extends Command
             ->addOption('type', null, InputOption::VALUE_OPTIONAL, 'Event type (CPN, CALL, MTY, CONV)')
             ->addOption('from', null, InputOption::VALUE_OPTIONAL, 'From date (YYYY-MM-DD)')
             ->addOption('to', null, InputOption::VALUE_OPTIONAL, 'To date (YYYY-MM-DD)')
-            ->addOption('sort', 's', InputOption::VALUE_OPTIONAL, 'Sort field', 'date')
+            ->addOption('sort', 's', InputOption::VALUE_OPTIONAL, 'Sort field (date, amount)', 'date')
             ->addOption('order', 'o', InputOption::VALUE_OPTIONAL, 'Sort order (asc, desc)', 'desc')
             ->addOption('limit', 'l', InputOption::VALUE_OPTIONAL, 'Limit results', '0');
     }
@@ -95,12 +95,21 @@ final class BondsCommand extends Command
             return Command::SUCCESS;
         }
 
+        $sort = $input->getOption('sort');
         $order = $input->getOption('order');
+        $limit = (int)$input->getOption('limit');
+
+        usort($events, function ($a, $b) use ($sort): int {
+            return match ($sort) {
+                'amount' => ($b->payOneBond ?? -1) <=> ($a->payOneBond ?? -1),
+                default => 0,
+            };
+        });
+
         if ($order === 'asc') {
             $events = array_reverse($events);
         }
 
-        $limit = (int)$input->getOption('limit');
         if ($limit > 0) {
             $events = array_slice($events, 0, $limit);
         }

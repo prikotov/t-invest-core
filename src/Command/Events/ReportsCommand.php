@@ -35,7 +35,7 @@ final class ReportsCommand extends Command
             ->addOption('figi', null, InputOption::VALUE_REQUIRED, 'Instrument FIGI')
             ->addOption('from', null, InputOption::VALUE_OPTIONAL, 'From date (YYYY-MM-DD)')
             ->addOption('to', null, InputOption::VALUE_OPTIONAL, 'To date (YYYY-MM-DD)')
-            ->addOption('sort', 's', InputOption::VALUE_OPTIONAL, 'Sort field', 'date')
+            ->addOption('sort', 's', InputOption::VALUE_OPTIONAL, 'Sort field (date, period)', 'date')
             ->addOption('order', 'o', InputOption::VALUE_OPTIONAL, 'Sort order (asc, desc)', 'desc')
             ->addOption('limit', 'l', InputOption::VALUE_OPTIONAL, 'Limit results', '0');
     }
@@ -92,12 +92,21 @@ final class ReportsCommand extends Command
             return Command::SUCCESS;
         }
 
+        $sort = $input->getOption('sort');
         $order = $input->getOption('order');
+        $limit = (int)$input->getOption('limit');
+
+        usort($reports, function ($a, $b) use ($sort): int {
+            return match ($sort) {
+                'period' => ($b->periodYear * 10 + $b->periodNum) <=> ($a->periodYear * 10 + $a->periodNum),
+                default => 0,
+            };
+        });
+
         if ($order === 'asc') {
             $reports = array_reverse($reports);
         }
 
-        $limit = (int)$input->getOption('limit');
         if ($limit > 0) {
             $reports = array_slice($reports, 0, $limit);
         }
