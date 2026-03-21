@@ -34,7 +34,10 @@ final class DividendsCommand extends Command
             ->addOption('ticker', 't', InputOption::VALUE_REQUIRED, 'Instrument ticker')
             ->addOption('figi', null, InputOption::VALUE_REQUIRED, 'Instrument FIGI')
             ->addOption('from', null, InputOption::VALUE_OPTIONAL, 'From date (YYYY-MM-DD)')
-            ->addOption('to', null, InputOption::VALUE_OPTIONAL, 'To date (YYYY-MM-DD)');
+            ->addOption('to', null, InputOption::VALUE_OPTIONAL, 'To date (YYYY-MM-DD)')
+            ->addOption('sort', 's', InputOption::VALUE_OPTIONAL, 'Sort field', 'date')
+            ->addOption('order', 'o', InputOption::VALUE_OPTIONAL, 'Sort order (asc, desc)', 'desc')
+            ->addOption('limit', 'l', InputOption::VALUE_OPTIONAL, 'Limit results', '0');
     }
 
     #[Override]
@@ -87,6 +90,16 @@ final class DividendsCommand extends Command
         if ($dividends === []) {
             $output->writeln(sprintf('<comment>No dividends found for %s</comment>', $ticker));
             return Command::SUCCESS;
+        }
+
+        $order = $input->getOption('order');
+        if ($order === 'asc') {
+            $dividends = array_reverse($dividends);
+        }
+
+        $limit = (int)$input->getOption('limit');
+        if ($limit > 0) {
+            $dividends = array_slice($dividends, 0, $limit);
         }
 
         $output->writeln(sprintf('<info>Dividends for %s</info>', $ticker));

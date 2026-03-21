@@ -35,7 +35,10 @@ final class BondsCommand extends Command
             ->addOption('figi', null, InputOption::VALUE_REQUIRED, 'Bond FIGI')
             ->addOption('type', null, InputOption::VALUE_OPTIONAL, 'Event type (CPN, CALL, MTY, CONV)')
             ->addOption('from', null, InputOption::VALUE_OPTIONAL, 'From date (YYYY-MM-DD)')
-            ->addOption('to', null, InputOption::VALUE_OPTIONAL, 'To date (YYYY-MM-DD)');
+            ->addOption('to', null, InputOption::VALUE_OPTIONAL, 'To date (YYYY-MM-DD)')
+            ->addOption('sort', 's', InputOption::VALUE_OPTIONAL, 'Sort field', 'date')
+            ->addOption('order', 'o', InputOption::VALUE_OPTIONAL, 'Sort order (asc, desc)', 'desc')
+            ->addOption('limit', 'l', InputOption::VALUE_OPTIONAL, 'Limit results', '0');
     }
 
     #[Override]
@@ -90,6 +93,16 @@ final class BondsCommand extends Command
         if ($events === []) {
             $output->writeln(sprintf('<comment>No bond events found for %s</comment>', $ticker));
             return Command::SUCCESS;
+        }
+
+        $order = $input->getOption('order');
+        if ($order === 'asc') {
+            $events = array_reverse($events);
+        }
+
+        $limit = (int)$input->getOption('limit');
+        if ($limit > 0) {
+            $events = array_slice($events, 0, $limit);
         }
 
         $output->writeln(sprintf('<info>Bond events for %s</info>', $ticker));
