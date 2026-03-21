@@ -7,7 +7,6 @@ namespace TInvest\Core\Command\Market;
 use Override;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -31,14 +30,50 @@ final class OrderbookCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addArgument('ticker', InputArgument::REQUIRED, 'Ticker (e.g., SBER, GAZP)')
+            ->addOption('ticker', 't', InputOption::VALUE_REQUIRED, 'Ticker (e.g., SBER, GAZP)')
+            ->addOption('figi', null, InputOption::VALUE_REQUIRED, 'Instrument FIGI')
             ->addOption('depth', 'd', InputOption::VALUE_OPTIONAL, 'Order book depth (1-50)', '20');
     }
 
     #[Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $ticker = $input->getArgument('ticker');
+        $ticker = $input->getOption('ticker');
+        $figi = $input->getOption('figi');
+
+        $ticker = is_string($ticker) && $ticker !== '' ? $ticker : null;
+        $figi = is_string($figi) && $figi !== '' ? $figi : null;
+
+        if ($ticker === null && $figi === null) {
+            $output->writeln('<error>--ticker or --figi is required</error>');
+            return Command::FAILURE;
+        }
+
+        if ($ticker !== null && $figi !== null) {
+            $resolvedTicker = $this->tickerResolver->resolveFigiToTicker($figi);
+            if ($resolvedTicker === null) {
+                $output->writeln(sprintf('<error>Cannot resolve FIGI %s</error>', $figi));
+                return Command::FAILURE;
+            }
+            if ($resolvedTicker !== $ticker) {
+                $output->writeln(sprintf(
+                    '<error>FIGI %s resolves to ticker %s, not %s</error>',
+                    $figi,
+                    $resolvedTicker,
+                    $ticker,
+                ));
+                return Command::FAILURE;
+            }
+        }
+
+        if ($ticker === null && $figi !== null) {
+            $ticker = $this->tickerResolver->resolveFigiToTicker($figi);
+            if ($ticker === null) {
+                $output->writeln(sprintf('<error>Cannot resolve FIGI %s to ticker</error>', $figi));
+                return Command::FAILURE;
+            }
+        }
+
         $depth = (int)$input->getOption('depth');
         $depth = max(1, min(50, $depth));
 
