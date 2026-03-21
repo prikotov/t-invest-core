@@ -48,7 +48,7 @@ final class CandlesCommand extends Command
         $intervalStr = $input->getOption('interval');
         $limit = (int)$input->getOption('limit');
 
-        $instrumentId = $this->tickerResolver->resolve($ticker);
+        $instrumentId = $this->tickerResolver->resolveTickerToUid($ticker);
         if ($instrumentId === null) {
             $output->writeln(sprintf('<error>Cannot resolve ticker: %s</error>', $ticker));
             return Command::FAILURE;

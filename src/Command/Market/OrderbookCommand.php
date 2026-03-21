@@ -42,7 +42,7 @@ final class OrderbookCommand extends Command
         $depth = (int)$input->getOption('depth');
         $depth = max(1, min(50, $depth));
 
-        $instrumentId = $this->tickerResolver->resolve($ticker);
+        $instrumentId = $this->tickerResolver->resolveTickerToUid($ticker);
         if ($instrumentId === null) {
             $output->writeln(sprintf('<error>Cannot resolve ticker: %s</error>', $ticker));
             return Command::FAILURE;

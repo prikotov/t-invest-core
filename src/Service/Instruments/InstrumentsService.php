@@ -6,6 +6,7 @@ namespace TInvest\Core\Service\Instruments;
 
 use DateTimeImmutable;
 use Override;
+use Symfony\Contracts\Cache\CacheInterface;
 use TInvest\Core\Component\TInvest\InstrumentsService\Dto\FindInstrumentRequestDto;
 use TInvest\Core\Component\TInvest\InstrumentsService\Dto\GetAssetFundamentalsRequestDto;
 use TInvest\Core\Component\TInvest\InstrumentsService\Dto\GetAssetReportsRequestDto;
@@ -22,8 +23,11 @@ use TInvest\Core\Service\Instruments\Dto\TradingScheduleViewDto;
 
 final class InstrumentsService implements InstrumentsServiceInterface
 {
+    private const CACHE_PREFIX = 'tinvest_instrument_';
+
     public function __construct(
         private readonly InstrumentsServiceComponentInterface $component,
+        private readonly CacheInterface $cache,
     ) {
     }
 
@@ -64,6 +68,17 @@ final class InstrumentsService implements InstrumentsServiceInterface
 
         $instrument = $this->component->getInstrumentBy($uid, 'INSTRUMENT_ID_TYPE_UID');
         return $instrument->figi;
+    }
+
+    #[Override]
+    public function getTickerByFigi(string $figi): ?string
+    {
+        $cacheKey = self::CACHE_PREFIX . 'figi_' . strtolower($figi);
+
+        return $this->cache->get($cacheKey, function () use ($figi): ?string {
+            $instrument = $this->component->getInstrumentBy($figi, 'INSTRUMENT_ID_TYPE_FIGI');
+            return $instrument->ticker;
+        });
     }
 
     private function findBestInstrumentUid(string $ticker): ?string

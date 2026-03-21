@@ -8,11 +8,15 @@ interface TickerResolverInterface
 {
     public function isValidTicker(string $ticker): bool;
 
-    public function resolve(string $ticker): ?string;
+    public function isFigi(string $id): bool;
+
+    public function resolveTickerToUid(string $ticker): ?string;
+
+    public function resolveFigiToTicker(string $figi): ?string;
 
     /**
      * @param array<string> $tickers
      * @return array<string>
      */
-    public function resolveBatch(array $tickers): array;
+    public function resolveTickersToUids(array $tickers): array;
 }

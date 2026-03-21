@@ -43,7 +43,7 @@ final class PricesCommand extends Command
         /** @var array<string> $tickers */
         $tickers = $input->getArgument('tickers');
 
-        $instrumentIds = $this->tickerResolver->resolveBatch($tickers);
+        $instrumentIds = $this->tickerResolver->resolveTickersToUids($tickers);
 
         if ($instrumentIds === []) {
             $output->writeln('<error>Cannot resolve any tickers</error>');

@@ -21,6 +21,8 @@ interface InstrumentsServiceInterface
 
     public function getFigiByTicker(string $ticker): ?string;
 
+    public function getTickerByFigi(string $figi): ?string;
+
     /**
      * @param array<string> $tickers
      * @return array<AssetFundamentalViewDto>

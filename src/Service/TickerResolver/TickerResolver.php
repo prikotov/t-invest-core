@@ -12,6 +12,7 @@ final class TickerResolver implements TickerResolverInterface
 {
     private const CACHE_PREFIX = 'tinvest_ticker_';
     private const TICKER_PATTERN = '/^[A-Z0-9-]{1,12}$/';
+    private const FIGI_PATTERN = '/^BBG[A-Z0-9]{9}$/';
 
     public function __construct(
         private readonly InstrumentsServiceInterface $instrumentsService,
@@ -30,7 +31,13 @@ final class TickerResolver implements TickerResolverInterface
     }
 
     #[Override]
-    public function resolve(string $ticker): ?string
+    public function isFigi(string $id): bool
+    {
+        return preg_match(self::FIGI_PATTERN, $id) === 1;
+    }
+
+    #[Override]
+    public function resolveTickerToUid(string $ticker): ?string
     {
         $cacheKey = self::CACHE_PREFIX . strtolower($ticker);
 
@@ -40,17 +47,27 @@ final class TickerResolver implements TickerResolverInterface
     }
 
     #[Override]
-    public function resolveBatch(array $tickers): array
+    public function resolveTickersToUids(array $tickers): array
     {
         $result = [];
 
         foreach ($tickers as $ticker) {
-            $resolved = $this->resolve($ticker);
+            $resolved = $this->resolveTickerToUid($ticker);
             if ($resolved !== null) {
                 $result[] = $resolved;
             }
         }
 
         return $result;
+    }
+
+    #[Override]
+    public function resolveFigiToTicker(string $figi): ?string
+    {
+        $cacheKey = self::CACHE_PREFIX . 'figi_' . strtolower($figi);
+
+        return $this->cache->get($cacheKey, function () use ($figi): ?string {
+            return $this->instrumentsService->getTickerByFigi($figi);
+        });
     }
 }
