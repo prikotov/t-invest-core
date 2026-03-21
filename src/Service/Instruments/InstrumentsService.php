@@ -220,6 +220,12 @@ final class InstrumentsService implements InstrumentsServiceInterface
             );
         }
 
+        usort($result, fn(DividendViewDto $a, DividendViewDto $b): int => 
+            ($b->recordDate ?? $b->paymentDate ?? new DateTimeImmutable('@0')) 
+            <=> 
+            ($a->recordDate ?? $a->paymentDate ?? new DateTimeImmutable('@0'))
+        );
+
         return $result;
     }
 
@@ -244,6 +250,10 @@ final class InstrumentsService implements InstrumentsServiceInterface
                 periodType: $report->periodType,
             );
         }
+
+        usort($result, fn(AssetReportViewDto $a, AssetReportViewDto $b): int => 
+            ($b->reportDate ?? new DateTimeImmutable('@0')) <=> ($a->reportDate ?? new DateTimeImmutable('@0'))
+        );
 
         return $result;
     }
@@ -273,6 +283,10 @@ final class InstrumentsService implements InstrumentsServiceInterface
                 note: $event->note,
             );
         }
+
+        usort($result, fn(BondEventViewDto $a, BondEventViewDto $b): int => 
+            ($b->eventDate ?? new DateTimeImmutable('@0')) <=> ($a->eventDate ?? new DateTimeImmutable('@0'))
+        );
 
         return $result;
     }
