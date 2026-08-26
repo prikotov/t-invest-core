@@ -28,7 +28,7 @@ final readonly class InstrumentDto
         public readonly ?string $countryOfRisk,
         public readonly ?string $countryOfRiskName,
         public readonly string $instrumentType,
-        public readonly int $tradingStatus,
+        public readonly string $tradingStatus,
         public readonly ?bool $otcFlag,
         public readonly bool $buyAvailableFlag,
         public readonly bool $sellAvailableFlag,
