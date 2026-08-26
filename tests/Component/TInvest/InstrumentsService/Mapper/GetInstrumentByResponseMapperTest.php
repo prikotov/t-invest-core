@@ -32,7 +32,7 @@ final class GetInstrumentByResponseMapperTest extends TestCase
                 'countryOfRisk' => 'US',
                 'countryOfRiskName' => 'United States',
                 'instrumentType' => 'share',
-                'tradingStatus' => 1,
+                'tradingStatus' => 'SECURITY_TRADING_STATUS_NORMAL_TRADING',
                 'otcFlag' => false,
                 'buyAvailableFlag' => true,
                 'sellAvailableFlag' => true,
@@ -63,6 +63,7 @@ final class GetInstrumentByResponseMapperTest extends TestCase
         $this->assertSame('Apple Inc.', $instrument->name);
         $this->assertSame('SPB', $instrument->exchange);
         $this->assertSame('US', $instrument->countryOfRisk);
+        $this->assertSame('SECURITY_TRADING_STATUS_NORMAL_TRADING', $instrument->tradingStatus);
         $this->assertTrue($instrument->shortEnabledFlag);
         $this->assertTrue($instrument->buyAvailableFlag);
         $this->assertTrue($instrument->sellAvailableFlag);

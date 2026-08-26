@@ -44,7 +44,7 @@ final class GetInstrumentByResponseMapper
                 ? (string)$instrument['countryOfRiskName']
                 : null,
             instrumentType: (string)$instrument['instrumentType'],
-            tradingStatus: (int)$instrument['tradingStatus'],
+            tradingStatus: (string)$instrument['tradingStatus'],
             otcFlag: isset($instrument['otcFlag']) ? (bool)$instrument['otcFlag'] : null,
             buyAvailableFlag: (bool)($instrument['buyAvailableFlag'] ?? false),
             sellAvailableFlag: (bool)($instrument['sellAvailableFlag'] ?? false),
