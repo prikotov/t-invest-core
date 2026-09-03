@@ -7,6 +7,8 @@ namespace TInvest\Core\Component\TInvest\MarketDataService;
 use GuzzleHttp\Client;
 use Override;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
+use stdClass;
 use TInvest\Core\Component\TInvest\MarketDataService\Dto\GetCandlesRequestDto;
 use TInvest\Core\Component\TInvest\MarketDataService\Dto\GetCandlesResponseDto;
 use TInvest\Core\Component\TInvest\MarketDataService\Dto\GetLastPricesRequestDto;
@@ -16,6 +18,7 @@ use TInvest\Core\Component\TInvest\MarketDataService\Dto\GetOrderBookResponseDto
 use TInvest\Core\Component\TInvest\MarketDataService\Mapper\CandleMapper;
 use TInvest\Core\Component\TInvest\MarketDataService\Mapper\LastPriceMapper;
 use TInvest\Core\Component\TInvest\MarketDataService\Mapper\OrderBookMapper;
+use UnexpectedValueException;
 
 final class MarketDataServiceComponent implements MarketDataServiceComponentInterface
 {
@@ -95,19 +98,40 @@ final class MarketDataServiceComponent implements MarketDataServiceComponentInte
         );
 
         $data = (string)$res->getBody();
+
+        if ($data === '') {
+            throw new RuntimeException('GetLastPrices: empty response body.');
+        }
+
         $encoded = json_encode(json_decode($data));
         if ($encoded !== false) {
             $this->logger->debug($encoded);
         }
 
-        if (empty($data)) {
-            return $this->lastPriceMapper->map([]);
+        $decoded = json_decode($data, false, 512, JSON_THROW_ON_ERROR);
+
+        if (!$decoded instanceof stdClass) {
+            throw new UnexpectedValueException(sprintf(
+                'GetLastPrices: response body must be a JSON object, %s given.',
+                get_debug_type($decoded),
+            ));
         }
 
-        /** @var array<string, mixed> */
-        $decoded = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
+        if (!property_exists($decoded, 'lastPrices')) {
+            throw new UnexpectedValueException('GetLastPrices: field "lastPrices" is missing.');
+        }
 
-        return $this->lastPriceMapper->map($decoded);
+        if (!is_array($decoded->lastPrices)) {
+            throw new UnexpectedValueException(sprintf(
+                'GetLastPrices: field "lastPrices" must be a JSON array, %s given.',
+                get_debug_type($decoded->lastPrices),
+            ));
+        }
+
+        /** @var array<string, mixed> $assoc */
+        $assoc = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
+
+        return $this->lastPriceMapper->map($assoc);
     }
 
     #[Override]
