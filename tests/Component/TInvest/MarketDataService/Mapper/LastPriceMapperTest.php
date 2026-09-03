@@ -7,6 +7,7 @@ namespace TInvest\Core\Tests\Component\TInvest\MarketDataService\Mapper;
 use PHPUnit\Framework\TestCase;
 use TInvest\Core\Component\TInvest\MarketDataService\Mapper\LastPriceMapper;
 use TInvest\Core\Component\TInvest\Shared\Factory\QuotationFactory;
+use UnexpectedValueException;
 
 final class LastPriceMapperTest extends TestCase
 {
@@ -17,11 +18,51 @@ final class LastPriceMapperTest extends TestCase
         $this->mapper = new LastPriceMapper(new QuotationFactory());
     }
 
-    public function testMapEmptyData(): void
+    public function testMapEmptyLastPrices(): void
     {
-        $result = $this->mapper->map([]);
+        $result = $this->mapper->map(['lastPrices' => []]);
 
-        $this->assertEmpty($result->lastPrices);
+        $this->assertSame([], $result->lastPrices);
+    }
+
+    public function testMapMissingLastPricesThrows(): void
+    {
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessage('lastPrices');
+
+        $this->mapper->map([]);
+    }
+
+    public function testMapLastPricesOfWrongTypeThrows(): void
+    {
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessage('lastPrices');
+
+        $this->mapper->map(['lastPrices' => 'broken']);
+    }
+
+    public function testMapLastPricesItemOfWrongTypeThrows(): void
+    {
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessage('lastPrices');
+
+        $this->mapper->map(['lastPrices' => ['broken']]);
+    }
+
+    public function testMapLastPricesObjectWithKeysThrows(): void
+    {
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessage('object given');
+
+        $this->mapper->map([
+            'lastPrices' => [
+                'BBG000000001' => [
+                    'figi' => 'BBG000000001',
+                    'price' => ['units' => '100', 'nano' => 0],
+                    'instrumentUid' => 'instrument-1',
+                ],
+            ],
+        ]);
     }
 
     public function testMapLastPrices(): void
