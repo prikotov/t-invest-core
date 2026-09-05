@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace TInvest\Core\Component\TInvest\OperationsService\Dto;
 
+use Iterator;
 use TInvest\Core\Component\TInvest\Shared\Dto\MoneyDto;
 use TInvest\Core\Component\TInvest\Shared\Dto\PercentDto;
 
@@ -17,7 +18,7 @@ final readonly class PortfolioDto
      * @param MoneyDto|null $totalAmountFutures
      * @param PercentDto $expectedYield
      * @param MoneyDto|null $totalAmountPortfolio
-     * @param list<PortfolioPositionDto> $positions
+     * @param Iterator<PortfolioPositionDto> $positions ленивый валидирующий итератор: DTO строится при итерации, ошибка маппинга одной позиции не скрывает предыдущие
      */
     public function __construct(
         public readonly ?MoneyDto $totalAmountShares,
@@ -27,7 +28,7 @@ final readonly class PortfolioDto
         public readonly ?MoneyDto $totalAmountFutures,
         public readonly PercentDto $expectedYield,
         public readonly ?MoneyDto $totalAmountPortfolio,
-        public readonly array $positions,
+        public readonly Iterator $positions,
     ) {
     }
 }

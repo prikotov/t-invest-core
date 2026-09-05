@@ -8,6 +8,7 @@ use DateTimeImmutable;
 use Generator;
 use Override;
 use TInvest\Core\Component\TInvest\OperationsService\Dto\GetOperationsRequestDto;
+use TInvest\Core\Component\TInvest\OperationsService\Dto\PortfolioPositionDto;
 use TInvest\Core\Component\TInvest\OperationsService\Enum\OperationStateEnum;
 use TInvest\Core\Component\TInvest\OperationsService\OperationsServiceComponentInterface;
 use TInvest\Core\Service\Operations\Dto\OperationViewDto;
@@ -51,9 +52,12 @@ final class OperationsService implements OperationsServiceInterface
     {
         $portfolio = $this->component->getPortfolio();
 
-        $positions = $portfolio->positions;
+        $positions = iterator_to_array($portfolio->positions, false);
         if ($ticker !== null) {
-            $positions = array_filter($positions, fn($p) => $p->ticker === $ticker);
+            $positions = array_values(array_filter(
+                $positions,
+                static fn (PortfolioPositionDto $p): bool => $p->ticker === $ticker,
+            ));
         }
 
         $positionViews = array_map(
@@ -65,7 +69,7 @@ final class OperationsService implements OperationsServiceInterface
                 currentPrice: $p->currentPrice->value,
                 expectedYield: $p->expectedYield->value,
             ),
-            array_values($positions)
+            $positions
         );
 
         return new PortfolioViewDto(

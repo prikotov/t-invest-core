@@ -7,11 +7,14 @@ namespace TInvest\Core\Component\TInvest\OperationsService;
 use GuzzleHttp\Client;
 use Override;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
+use stdClass;
 use TInvest\Core\Component\TInvest\OperationsService\Dto\GetOperationsRequestDto;
 use TInvest\Core\Component\TInvest\OperationsService\Dto\GetOperationsResponseDto;
 use TInvest\Core\Component\TInvest\OperationsService\Dto\PortfolioDto;
 use TInvest\Core\Component\TInvest\OperationsService\Mapper\GetPortfolioResponseMapper;
 use TInvest\Core\Component\TInvest\OperationsService\Mapper\OperationMapper;
+use UnexpectedValueException;
 
 final class OperationsServiceComponent implements OperationsServiceComponentInterface
 {
@@ -53,19 +56,40 @@ final class OperationsServiceComponent implements OperationsServiceComponentInte
         );
 
         $data = (string)$res->getBody();
+
+        if ($data === '') {
+            throw new RuntimeException('GetPortfolio: empty response body.');
+        }
+
         $encoded = json_encode(json_decode($data));
         if ($encoded !== false) {
             $this->logger->debug($encoded);
         }
 
-        if (empty($data)) {
-            return $this->getPortfolioResponseMapper->map([]);
+        $decoded = json_decode($data, false, 512, JSON_THROW_ON_ERROR);
+
+        if (!$decoded instanceof stdClass) {
+            throw new UnexpectedValueException(sprintf(
+                'GetPortfolio: response body must be a JSON object, %s given.',
+                get_debug_type($decoded),
+            ));
         }
 
-        /** @var array<string, mixed> */
-        $decoded = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
+        if (!property_exists($decoded, 'positions')) {
+            throw new UnexpectedValueException('GetPortfolio: field "positions" is missing.');
+        }
 
-        return $this->getPortfolioResponseMapper->map($decoded);
+        if (!is_array($decoded->positions)) {
+            throw new UnexpectedValueException(sprintf(
+                'GetPortfolio: field "positions" must be a JSON array, %s given.',
+                get_debug_type($decoded->positions),
+            ));
+        }
+
+        /** @var array<string, mixed> $assoc */
+        $assoc = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
+
+        return $this->getPortfolioResponseMapper->map($assoc);
     }
 
     #[Override]
