@@ -10,6 +10,7 @@ use TInvest\Core\Component\TInvest\Shared\Factory\MoneyFactory;
 use TInvest\Core\Component\TInvest\Shared\Factory\PercentFactory;
 use TInvest\Core\Component\TInvest\Shared\Factory\QuantityFactory;
 use TInvest\Core\Component\TInvest\Shared\Factory\QuotationFactory;
+use UnexpectedValueException;
 
 final class GetPortfolioResponseMapperTest extends TestCase
 {
@@ -34,6 +35,7 @@ final class GetPortfolioResponseMapperTest extends TestCase
                 'nano' => 500000000,
             ],
             'expectedYield' => ['units' => '0', 'nano' => 0],
+            'positions' => [],
         ];
 
         $result = $this->mapper->map($data);
@@ -45,7 +47,7 @@ final class GetPortfolioResponseMapperTest extends TestCase
 
     public function testMapTotalAmountSharesReturnsNullForEmptyData(): void
     {
-        $result = $this->mapper->map([]);
+        $result = $this->mapper->map(['positions' => []]);
 
         $this->assertNull($result->totalAmountShares);
     }
@@ -57,6 +59,7 @@ final class GetPortfolioResponseMapperTest extends TestCase
                 'units' => '15',
                 'nano' => 750000000,
             ],
+            'positions' => [],
         ];
 
         $result = $this->mapper->map($data);
@@ -90,10 +93,107 @@ final class GetPortfolioResponseMapperTest extends TestCase
 
         $result = $this->mapper->map($data);
 
-        $this->assertCount(1, $result->positions);
-        $this->assertSame('BBG000000001', $result->positions[0]->figi);
-        $this->assertSame('share', $result->positions[0]->instrumentType);
-        $this->assertSame(10.0, $result->positions[0]->quantity->value);
-        $this->assertFalse($result->positions[0]->blocked);
+        $positions = iterator_to_array($result->positions, false);
+        $this->assertCount(1, $positions);
+        $this->assertSame('BBG000000001', $positions[0]->figi);
+        $this->assertSame('share', $positions[0]->instrumentType);
+        $this->assertSame(10.0, $positions[0]->quantity->value);
+        $this->assertFalse($positions[0]->blocked);
+    }
+
+    public function testMapMissingPositionsFieldThrows(): void
+    {
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessage('positions" is missing');
+
+        $this->mapper->map(['expectedYield' => ['units' => '0', 'nano' => 0]]);
+    }
+
+    public function testMapNullPositionsThrows(): void
+    {
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessage('must be a list');
+
+        $this->mapper->map(['positions' => null]);
+    }
+
+    public function testMapPositionsOfWrongTypeThrows(): void
+    {
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessage('must be a list');
+
+        $this->mapper->map(['positions' => 'broken']);
+    }
+
+    public function testMapPositionsObjectInsteadOfListThrows(): void
+    {
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessage('must be a list');
+
+        $this->mapper->map(['positions' => ['BBG000000001' => ['figi' => 'BBG000000001']]]);
+    }
+
+    public function testMapEmptyPositionsListIsValid(): void
+    {
+        $result = $this->mapper->map(['positions' => []]);
+
+        $this->assertSame([], iterator_to_array($result->positions, false));
+    }
+
+    public function testMapPositionsItemOfWrongTypeThrowsOnIteration(): void
+    {
+        $result = $this->mapper->map(['positions' => ['broken']]);
+
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessage('each item');
+
+        $result->positions->rewind();
+    }
+
+    /**
+     * Построчная семантика: DTO первой позиции доступен до падения
+     * маппинга второй — позиции маппятся лениво при итерации.
+     */
+    public function testMapInvalidSecondPositionDoesNotHideFirstPosition(): void
+    {
+        $result = $this->mapper->map([
+            'positions' => [
+                $this->positionData('BBG000000001'),
+                $this->positionData('BBG000000002', validQuantity: false),
+            ],
+        ]);
+
+        $iterator = $result->positions;
+        $iterator->rewind();
+
+        $this->assertSame('BBG000000001', $iterator->current()->figi);
+
+        // Падение происходит в момент продвижения итератора: next()
+        // выполняет ленивый маппинг второй позиции.
+        $this->expectException(\TypeError::class);
+        $iterator->next();
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function positionData(string $figi, bool $validQuantity = true): array
+    {
+        return [
+            'figi' => $figi,
+            'instrumentType' => 'share',
+            'quantity' => $validQuantity ? ['units' => '10', 'nano' => 0] : null,
+            'averagePositionPrice' => null,
+            'expectedYield' => ['units' => '5', 'nano' => 0],
+            'currentPrice' => ['currency' => 'RUB', 'units' => '105', 'nano' => 0],
+            'averagePositionPriceFifo' => ['currency' => 'RUB', 'units' => '100', 'nano' => 0],
+            'quantityLots' => ['units' => '1', 'nano' => 0],
+            'blocked' => false,
+            'positionUid' => 'pos-' . $figi,
+            'instrumentUid' => 'inst-' . $figi,
+            'varMargin' => ['currency' => 'RUB', 'units' => '0', 'nano' => 0],
+            'expectedYieldFifo' => ['units' => '5', 'nano' => 0],
+            'ticker' => 'SBER',
+        ];
     }
 }
