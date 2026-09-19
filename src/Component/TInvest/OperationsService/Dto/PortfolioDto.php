@@ -18,7 +18,8 @@ final readonly class PortfolioDto
      * @param MoneyDto|null $totalAmountFutures
      * @param PercentDto $expectedYield
      * @param MoneyDto|null $totalAmountPortfolio
-     * @param Iterator<PortfolioPositionDto> $positions ленивый валидирующий итератор: DTO строится при итерации, ошибка маппинга одной позиции не скрывает предыдущие
+     * @param Iterator<PortfolioPositionDto> $positions ленивый валидирующий итератор:
+     *   DTO строится при итерации, ошибка маппинга одной позиции не скрывает предыдущие
      */
     public function __construct(
         public readonly ?MoneyDto $totalAmountShares,

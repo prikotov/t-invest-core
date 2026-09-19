@@ -81,7 +81,7 @@ trait OutputFormatTrait
         }, $rows);
 
         $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-        $output->writeln($json ?: '[]');
+        $output->writeln($json === false ? '[]' : $json);
 
         return 0;
     }
@@ -110,7 +110,6 @@ trait OutputFormatTrait
             if ($cell === null) {
                 return '';
             }
-            $cell = (string)$cell;
             if (str_contains($cell, ',') || str_contains($cell, '"') || str_contains($cell, "\n")) {
                 return '"' . str_replace('"', '""', $cell) . '"';
             }
@@ -134,7 +133,7 @@ trait OutputFormatTrait
 
         foreach ($rows as $row) {
             $cells = array_map(function ($v): string {
-                return $v === null ? '' : (string)$v;
+                return $v === null ? '' : $v;
             }, $row);
             $output->writeln('| ' . implode(' | ', $cells) . ' |');
         }

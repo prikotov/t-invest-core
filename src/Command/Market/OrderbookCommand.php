@@ -144,7 +144,7 @@ final class OrderbookCommand extends Command
             $bestAsk = $orderBook->asks[0]->price;
             $bestBid = $orderBook->bids[0]->price;
             $spread = $bestAsk - $bestBid;
-            $spreadPercent = $bestBid > 0 ? ($spread / $bestBid) * 100 : 0;
+            $spreadPercent = $bestBid > 0 ? ($spread / $bestBid) * 100.0 : 0.0;
 
             $output->writeln(sprintf('<info>Spread: %.4f (%.2f%%)</info>', $spread, $spreadPercent));
         }

@@ -45,10 +45,19 @@ interface InstrumentsServiceInterface
     /**
      * @return array<AssetReportViewDto>
      */
-    public function getAssetReports(string $ticker, ?DateTimeImmutable $from = null, ?DateTimeImmutable $to = null): array;
+    public function getAssetReports(
+        string $ticker,
+        ?DateTimeImmutable $from = null,
+        ?DateTimeImmutable $to = null,
+    ): array;
 
     /**
      * @return array<BondEventViewDto>
      */
-    public function getBondEvents(string $ticker, ?string $eventType = null, ?DateTimeImmutable $from = null, ?DateTimeImmutable $to = null): array;
+    public function getBondEvents(
+        string $ticker,
+        ?string $eventType = null,
+        ?DateTimeImmutable $from = null,
+        ?DateTimeImmutable $to = null,
+    ): array;
 }

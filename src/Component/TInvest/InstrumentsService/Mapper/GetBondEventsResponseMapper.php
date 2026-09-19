@@ -56,7 +56,9 @@ final class GetBondEventsResponseMapper
                 payDate: $payDate !== null ? new DateTimeImmutable($payDate) : null,
                 payOneBond: $payOneBond !== null ? $this->moneyFactory->create($payOneBond) : null,
                 couponPeriod: isset($item['couponPeriod']) ? (int)$item['couponPeriod'] : null,
-                couponInterestRate: $couponInterestRate !== null ? $this->quotationFactory->create($couponInterestRate) : null,
+                couponInterestRate: $couponInterestRate !== null
+                    ? $this->quotationFactory->create($couponInterestRate)
+                    : null,
                 couponStartDate: $couponStartDate !== null ? new DateTimeImmutable($couponStartDate) : null,
                 couponEndDate: $couponEndDate !== null ? new DateTimeImmutable($couponEndDate) : null,
                 note: isset($item['note']) ? (string)$item['note'] : null,

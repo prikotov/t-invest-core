@@ -11,8 +11,10 @@ use RuntimeException;
 use stdClass;
 use TInvest\Core\Component\TInvest\OperationsService\Dto\GetOperationsRequestDto;
 use TInvest\Core\Component\TInvest\OperationsService\Dto\GetOperationsResponseDto;
+use TInvest\Core\Component\TInvest\OperationsService\Dto\GetPositionsResponseDto;
 use TInvest\Core\Component\TInvest\OperationsService\Dto\PortfolioDto;
 use TInvest\Core\Component\TInvest\OperationsService\Mapper\GetPortfolioResponseMapper;
+use TInvest\Core\Component\TInvest\OperationsService\Mapper\GetPositionsResponseMapper;
 use TInvest\Core\Component\TInvest\OperationsService\Mapper\OperationMapper;
 use UnexpectedValueException;
 
@@ -26,6 +28,7 @@ final class OperationsServiceComponent implements OperationsServiceComponentInte
         private readonly LoggerInterface $logger,
         private readonly GetPortfolioResponseMapper $getPortfolioResponseMapper,
         private readonly OperationMapper $operationMapper,
+        private readonly GetPositionsResponseMapper $getPositionsResponseMapper,
     ) {
     }
 
@@ -90,6 +93,45 @@ final class OperationsServiceComponent implements OperationsServiceComponentInte
         $assoc = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
 
         return $this->getPortfolioResponseMapper->map($assoc);
+    }
+
+    #[Override]
+    public function getPositions(): GetPositionsResponseDto
+    {
+        $res = $this->client->post(
+            $this->getUrl('tinkoff.public.invest.api.contract.v1.OperationsService/GetPositions'),
+            [
+                'headers' => $this->getHeaders(),
+                'body' => json_encode([
+                    'accountId' => $this->accountId,
+                ]),
+            ]
+        );
+
+        $data = (string)$res->getBody();
+
+        if ($data === '') {
+            throw new RuntimeException('GetPositions: empty response body.');
+        }
+
+        $encoded = json_encode(json_decode($data));
+        if ($encoded !== false) {
+            $this->logger->debug($encoded);
+        }
+
+        $decoded = json_decode($data, false, 512, JSON_THROW_ON_ERROR);
+
+        if (!$decoded instanceof stdClass) {
+            throw new UnexpectedValueException(sprintf(
+                'GetPositions: response body must be a JSON object, %s given.',
+                get_debug_type($decoded),
+            ));
+        }
+
+        /** @var array<string, mixed> $assoc */
+        $assoc = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
+
+        return $this->getPositionsResponseMapper->map($assoc);
     }
 
     #[Override]
