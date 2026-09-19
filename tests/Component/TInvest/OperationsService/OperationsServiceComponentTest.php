@@ -13,6 +13,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use RuntimeException;
 use TInvest\Core\Component\TInvest\OperationsService\Mapper\GetPortfolioResponseMapper;
+use TInvest\Core\Component\TInvest\OperationsService\Mapper\GetPositionsResponseMapper;
 use TInvest\Core\Component\TInvest\OperationsService\Mapper\OperationMapper;
 use TInvest\Core\Component\TInvest\OperationsService\OperationsServiceComponent;
 use TInvest\Core\Component\TInvest\Shared\Factory\MoneyFactory;
@@ -48,6 +49,7 @@ final class OperationsServiceComponentTest extends TestCase
                 new QuotationFactory(),
             ),
             new OperationMapper(new MoneyFactory()),
+            new GetPositionsResponseMapper(new MoneyFactory()),
         );
     }
 
@@ -219,6 +221,142 @@ final class OperationsServiceComponentTest extends TestCase
         $this->assertTrue($position->blocked);
         $this->assertNull($position->blockedLots);
         $this->assertSame('SBER', $position->ticker);
+    }
+
+    public function testGetPositionsEmptyBodyThrows(): void
+    {
+        $this->queueResponse('');
+        $component = $this->createComponent();
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('empty response body');
+
+        $component->getPositions();
+    }
+
+    public function testGetPositionsBodyIsNotJsonObjectThrows(): void
+    {
+        $this->queueResponse('null');
+        $component = $this->createComponent();
+
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessage('must be a JSON object');
+
+        $component->getPositions();
+    }
+
+    public function testGetPositionsTopLevelArrayThrows(): void
+    {
+        $this->queueResponse('[{"money": []}]');
+        $component = $this->createComponent();
+
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessage('must be a JSON object');
+
+        $component->getPositions();
+    }
+
+    public function testGetPositionsInvalidJsonThrows(): void
+    {
+        $this->queueResponse('{"money": ');
+        $component = $this->createComponent();
+
+        $this->expectException(JsonException::class);
+
+        $component->getPositions();
+    }
+
+    public function testGetPositionsEmptyObjectIsValidEmptyResponse(): void
+    {
+        $this->queueResponse('{}');
+        $component = $this->createComponent();
+
+        $result = $component->getPositions();
+
+        $this->assertSame([], $result->money);
+        $this->assertNull($result->blocked);
+        $this->assertSame([], $result->securities);
+        $this->assertFalse($result->limitsLoadingInProgress);
+        $this->assertSame([], $result->futures);
+        $this->assertSame([], $result->options);
+    }
+
+    public function testGetPositionsMapsPayload(): void
+    {
+        $this->queueResponse(
+            <<<'JSON'
+            {
+                "money": [
+                    {"currency": "rub", "units": "1000", "nano": 500000000}
+                ],
+                "blocked": [
+                    {"currency": "rub", "units": "250", "nano": 0}
+                ],
+                "securities": [
+                    {
+                        "figi": "BBG000000001",
+                        "blocked": 5,
+                        "balance": 100,
+                        "positionUid": "pos-1",
+                        "instrumentUid": "inst-1",
+                        "exchangeBlocked": false,
+                        "instrumentType": "share"
+                    }
+                ],
+                "limitsLoadingInProgress": true,
+                "futures": [
+                    {
+                        "figi": "FUT000000001",
+                        "blocked": 1,
+                        "balance": 3,
+                        "positionUid": "fpos-1",
+                        "instrumentUid": "finst-1"
+                    }
+                ],
+                "options": [
+                    {
+                        "positionUid": "opos-1",
+                        "instrumentUid": "oinst-1",
+                        "blocked": 2,
+                        "balance": 7
+                    }
+                ]
+            }
+            JSON
+        );
+        $component = $this->createComponent();
+
+        $result = $component->getPositions();
+
+        $this->assertCount(1, $result->money);
+        $this->assertSame('rub', $result->money[0]->currency);
+        $this->assertSame(1000.5, $result->money[0]->value);
+
+        $this->assertNotNull($result->blocked);
+        $this->assertCount(1, $result->blocked);
+        $this->assertSame(250.0, $result->blocked[0]->value);
+
+        $this->assertCount(1, $result->securities);
+        $security = $result->securities[0];
+        $this->assertSame('BBG000000001', $security->figi);
+        $this->assertSame(5, $security->blocked);
+        $this->assertSame(100, $security->balance);
+        $this->assertSame('pos-1', $security->positionUid);
+        $this->assertSame('inst-1', $security->instrumentUid);
+        $this->assertFalse($security->exchangeBlocked);
+        $this->assertSame('share', $security->instrumentType);
+
+        $this->assertTrue($result->limitsLoadingInProgress);
+
+        $this->assertCount(1, $result->futures);
+        $future = $result->futures[0];
+        $this->assertSame('FUT000000001', $future->figi);
+        $this->assertSame(3, $future->balance);
+
+        $this->assertCount(1, $result->options);
+        $option = $result->options[0];
+        $this->assertSame('opos-1', $option->positionUid);
+        $this->assertSame(7, $option->balance);
     }
 
     /**
