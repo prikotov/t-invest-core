@@ -56,11 +56,15 @@ final class FundamentalsCommand extends Command
                 $rows[] = [
                     $fundamental->ticker,
                     $fundamental->currency,
-                    $fundamental->marketCapitalization !== null ? $this->formatMoney($fundamental->marketCapitalization) : 'N/A',
+                    $fundamental->marketCapitalization !== null
+                        ? $this->formatMoney($fundamental->marketCapitalization)
+                        : 'N/A',
                     $fundamental->peRatioTtm !== null ? number_format($fundamental->peRatioTtm, 2) : 'N/A',
                     $fundamental->priceToBookTtm !== null ? number_format($fundamental->priceToBookTtm, 2) : 'N/A',
                     $fundamental->roe !== null ? number_format($fundamental->roe, 2) . '%' : 'N/A',
-                    $fundamental->dividendYieldDailyTtm !== null ? number_format($fundamental->dividendYieldDailyTtm, 2) . '%' : 'N/A',
+                    $fundamental->dividendYieldDailyTtm !== null
+                        ? number_format($fundamental->dividendYieldDailyTtm, 2) . '%'
+                        : 'N/A',
                     $fundamental->epsTtm !== null ? $this->formatMoney($fundamental->epsTtm) : 'N/A',
                 ];
             }

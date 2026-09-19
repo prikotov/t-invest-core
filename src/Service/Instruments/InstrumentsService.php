@@ -240,18 +240,20 @@ final class InstrumentsService implements InstrumentsServiceInterface
             );
         }
 
-        usort($result, fn(DividendViewDto $a, DividendViewDto $b): int => 
-            ($b->recordDate ?? $b->paymentDate ?? new DateTimeImmutable('@0')) 
-            <=> 
-            ($a->recordDate ?? $a->paymentDate ?? new DateTimeImmutable('@0'))
-        );
+        usort($result, fn(DividendViewDto $a, DividendViewDto $b): int =>
+            ($b->recordDate ?? $b->paymentDate ?? new DateTimeImmutable('@0'))
+            <=>
+            ($a->recordDate ?? $a->paymentDate ?? new DateTimeImmutable('@0')));
 
         return $result;
     }
 
     #[Override]
-    public function getAssetReports(string $ticker, ?DateTimeImmutable $from = null, ?DateTimeImmutable $to = null): array
-    {
+    public function getAssetReports(
+        string $ticker,
+        ?DateTimeImmutable $from = null,
+        ?DateTimeImmutable $to = null,
+    ): array {
         $assetUid = $this->getAssetUidByTicker($ticker);
         if ($assetUid === null) {
             return [];
@@ -271,16 +273,19 @@ final class InstrumentsService implements InstrumentsServiceInterface
             );
         }
 
-        usort($result, fn(AssetReportViewDto $a, AssetReportViewDto $b): int => 
-            ($b->reportDate ?? new DateTimeImmutable('@0')) <=> ($a->reportDate ?? new DateTimeImmutable('@0'))
-        );
+        usort($result, fn(AssetReportViewDto $a, AssetReportViewDto $b): int =>
+            ($b->reportDate ?? new DateTimeImmutable('@0')) <=> ($a->reportDate ?? new DateTimeImmutable('@0')));
 
         return $result;
     }
 
     #[Override]
-    public function getBondEvents(string $ticker, ?string $eventType = null, ?DateTimeImmutable $from = null, ?DateTimeImmutable $to = null): array
-    {
+    public function getBondEvents(
+        string $ticker,
+        ?string $eventType = null,
+        ?DateTimeImmutable $from = null,
+        ?DateTimeImmutable $to = null,
+    ): array {
         $figi = $this->getFigiByTicker($ticker);
         if ($figi === null) {
             return [];
@@ -304,9 +309,8 @@ final class InstrumentsService implements InstrumentsServiceInterface
             );
         }
 
-        usort($result, fn(BondEventViewDto $a, BondEventViewDto $b): int => 
-            ($b->eventDate ?? new DateTimeImmutable('@0')) <=> ($a->eventDate ?? new DateTimeImmutable('@0'))
-        );
+        usort($result, fn(BondEventViewDto $a, BondEventViewDto $b): int =>
+            ($b->eventDate ?? new DateTimeImmutable('@0')) <=> ($a->eventDate ?? new DateTimeImmutable('@0')));
 
         return $result;
     }

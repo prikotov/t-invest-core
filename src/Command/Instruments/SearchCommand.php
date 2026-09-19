@@ -83,7 +83,11 @@ final class SearchCommand extends Command
         }
 
         $output->writeln('');
-        $output->writeln(sprintf('<comment>Total: %d (showing %d)</comment>', count($this->instrumentsService->search($query)), count($instruments)));
+        $output->writeln(sprintf(
+            '<comment>Total: %d (showing %d)</comment>',
+            count($this->instrumentsService->search($query)),
+            count($instruments),
+        ));
 
         return Command::SUCCESS;
     }
