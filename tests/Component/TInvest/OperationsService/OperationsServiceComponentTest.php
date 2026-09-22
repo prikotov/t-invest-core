@@ -11,11 +11,11 @@ use GuzzleHttp\Psr7\Response;
 use JsonException;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
-use RuntimeException;
 use TInvest\Core\Component\TInvest\OperationsService\Mapper\GetPortfolioResponseMapper;
 use TInvest\Core\Component\TInvest\OperationsService\Mapper\GetPositionsResponseMapper;
 use TInvest\Core\Component\TInvest\OperationsService\Mapper\OperationMapper;
 use TInvest\Core\Component\TInvest\OperationsService\OperationsServiceComponent;
+use TInvest\Core\Component\TInvest\Shared\Exception\TInvestRequestException;
 use TInvest\Core\Component\TInvest\Shared\Factory\MoneyFactory;
 use TInvest\Core\Component\TInvest\Shared\Factory\PercentFactory;
 use TInvest\Core\Component\TInvest\Shared\Factory\QuantityFactory;
@@ -63,7 +63,7 @@ final class OperationsServiceComponentTest extends TestCase
         $this->queueResponse('');
         $component = $this->createComponent();
 
-        $this->expectException(RuntimeException::class);
+        $this->expectException(TInvestRequestException::class);
         $this->expectExceptionMessage('empty response body');
 
         $component->getPortfolio();
@@ -228,7 +228,7 @@ final class OperationsServiceComponentTest extends TestCase
         $this->queueResponse('');
         $component = $this->createComponent();
 
-        $this->expectException(RuntimeException::class);
+        $this->expectException(TInvestRequestException::class);
         $this->expectExceptionMessage('empty response body');
 
         $component->getPositions();

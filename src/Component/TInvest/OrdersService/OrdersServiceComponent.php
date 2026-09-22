@@ -7,7 +7,6 @@ namespace TInvest\Core\Component\TInvest\OrdersService;
 use GuzzleHttp\Client;
 use Override;
 use Psr\Log\LoggerInterface;
-use RuntimeException;
 use TInvest\Core\Component\TInvest\OrdersService\Dto\CancelOrderResponseDto;
 use TInvest\Core\Component\TInvest\OrdersService\Dto\GetOrdersResponseDto;
 use TInvest\Core\Component\TInvest\OrdersService\Dto\OrderStateDto;
@@ -19,6 +18,7 @@ use TInvest\Core\Component\TInvest\OrdersService\Mapper\GetOrdersResponseMapper;
 use TInvest\Core\Component\TInvest\OrdersService\Mapper\OrderStateResponseMapper;
 use TInvest\Core\Component\TInvest\OrdersService\Mapper\PostOrderRequestMapper;
 use TInvest\Core\Component\TInvest\OrdersService\Mapper\PostOrderResponseMapper;
+use TInvest\Core\Component\TInvest\Shared\Exception\TInvestRequestException;
 
 final class OrdersServiceComponent implements OrdersServiceComponentInterface
 {
@@ -58,7 +58,7 @@ final class OrdersServiceComponent implements OrdersServiceComponentInterface
                 $encoded = json_encode($data);
                 $message = $encoded !== false ? $encoded : '';
             }
-            throw new RuntimeException(
+            throw new TInvestRequestException(
                 $message,
                 isset($data['description']) && is_numeric($data['description'])
                     ? (int)$data['description'] : $statusCode,

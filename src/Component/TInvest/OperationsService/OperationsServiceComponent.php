@@ -7,7 +7,6 @@ namespace TInvest\Core\Component\TInvest\OperationsService;
 use GuzzleHttp\Client;
 use Override;
 use Psr\Log\LoggerInterface;
-use RuntimeException;
 use stdClass;
 use TInvest\Core\Component\TInvest\OperationsService\Dto\GetOperationsRequestDto;
 use TInvest\Core\Component\TInvest\OperationsService\Dto\GetOperationsResponseDto;
@@ -16,6 +15,7 @@ use TInvest\Core\Component\TInvest\OperationsService\Dto\PortfolioDto;
 use TInvest\Core\Component\TInvest\OperationsService\Mapper\GetPortfolioResponseMapper;
 use TInvest\Core\Component\TInvest\OperationsService\Mapper\GetPositionsResponseMapper;
 use TInvest\Core\Component\TInvest\OperationsService\Mapper\OperationMapper;
+use TInvest\Core\Component\TInvest\Shared\Exception\TInvestRequestException;
 use UnexpectedValueException;
 
 final class OperationsServiceComponent implements OperationsServiceComponentInterface
@@ -61,7 +61,7 @@ final class OperationsServiceComponent implements OperationsServiceComponentInte
         $data = (string)$res->getBody();
 
         if ($data === '') {
-            throw new RuntimeException('GetPortfolio: empty response body.');
+            throw new TInvestRequestException('GetPortfolio: empty response body.');
         }
 
         $encoded = json_encode(json_decode($data));
@@ -111,7 +111,7 @@ final class OperationsServiceComponent implements OperationsServiceComponentInte
         $data = (string)$res->getBody();
 
         if ($data === '') {
-            throw new RuntimeException('GetPositions: empty response body.');
+            throw new TInvestRequestException('GetPositions: empty response body.');
         }
 
         $encoded = json_encode(json_decode($data));
