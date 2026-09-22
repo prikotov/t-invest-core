@@ -113,7 +113,7 @@ final class OrderbookCommand extends Command
             $ticker,
             $orderBook->depth
         ));
-        $output->writeln(sprintf('<info>Time: %s</info>', $orderBook->time->format('Y-m-d H:i:s')));
+        $output->writeln(sprintf('<info>Time: %s</info>', $orderBook->time?->format('Y-m-d H:i:s') ?? 'N/A'));
         $output->writeln('');
 
         $output->writeln(sprintf('<comment>%-15s %12s</comment>', 'ASKS', ''));

@@ -17,10 +17,12 @@ final readonly class GetOrderBookResponseDto
         public readonly int $depth,
         public readonly array $bids,
         public readonly array $asks,
-        public readonly DateTimeImmutable $time,
+        public readonly ?DateTimeImmutable $time,
         public readonly string $instrumentUid,
         public readonly ?float $limitUp = null,
         public readonly ?float $limitDown = null,
+        public readonly ?float $lastPrice = null,
+        public readonly ?DateTimeImmutable $lastPriceTs = null,
     ) {
     }
 }
