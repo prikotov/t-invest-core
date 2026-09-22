@@ -11,12 +11,12 @@ use GuzzleHttp\Psr7\Response;
 use JsonException;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
-use RuntimeException;
 use TInvest\Core\Component\TInvest\MarketDataService\Dto\GetLastPricesRequestDto;
 use TInvest\Core\Component\TInvest\MarketDataService\MarketDataServiceComponent;
 use TInvest\Core\Component\TInvest\MarketDataService\Mapper\CandleMapper;
 use TInvest\Core\Component\TInvest\MarketDataService\Mapper\LastPriceMapper;
 use TInvest\Core\Component\TInvest\MarketDataService\Mapper\OrderBookMapper;
+use TInvest\Core\Component\TInvest\Shared\Exception\TInvestRequestException;
 use TInvest\Core\Component\TInvest\Shared\Factory\QuotationFactory;
 use UnexpectedValueException;
 
@@ -59,7 +59,7 @@ final class MarketDataServiceComponentTest extends TestCase
         $this->queueResponse('');
         $component = $this->createComponent();
 
-        $this->expectException(RuntimeException::class);
+        $this->expectException(TInvestRequestException::class);
         $this->expectExceptionMessage('empty response body');
 
         $component->getLastPrices($this->createRequest());

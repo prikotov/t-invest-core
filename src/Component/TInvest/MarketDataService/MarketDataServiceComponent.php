@@ -7,7 +7,6 @@ namespace TInvest\Core\Component\TInvest\MarketDataService;
 use GuzzleHttp\Client;
 use Override;
 use Psr\Log\LoggerInterface;
-use RuntimeException;
 use stdClass;
 use TInvest\Core\Component\TInvest\MarketDataService\Dto\GetCandlesRequestDto;
 use TInvest\Core\Component\TInvest\MarketDataService\Dto\GetCandlesResponseDto;
@@ -18,6 +17,7 @@ use TInvest\Core\Component\TInvest\MarketDataService\Dto\GetOrderBookResponseDto
 use TInvest\Core\Component\TInvest\MarketDataService\Mapper\CandleMapper;
 use TInvest\Core\Component\TInvest\MarketDataService\Mapper\LastPriceMapper;
 use TInvest\Core\Component\TInvest\MarketDataService\Mapper\OrderBookMapper;
+use TInvest\Core\Component\TInvest\Shared\Exception\TInvestRequestException;
 use UnexpectedValueException;
 
 final class MarketDataServiceComponent implements MarketDataServiceComponentInterface
@@ -100,7 +100,7 @@ final class MarketDataServiceComponent implements MarketDataServiceComponentInte
         $data = (string)$res->getBody();
 
         if ($data === '') {
-            throw new RuntimeException('GetLastPrices: empty response body.');
+            throw new TInvestRequestException('GetLastPrices: empty response body.');
         }
 
         $encoded = json_encode(json_decode($data));
