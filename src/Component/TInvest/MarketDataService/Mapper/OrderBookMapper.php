@@ -44,16 +44,19 @@ final class OrderBookMapper
 
         $limitUpQuotation = isset($data['limitUp']) ? $this->quotationFactory->create($data['limitUp']) : null;
         $limitDownQuotation = isset($data['limitDown']) ? $this->quotationFactory->create($data['limitDown']) : null;
+        $lastPriceQuotation = isset($data['lastPrice']) ? $this->quotationFactory->create($data['lastPrice']) : null;
 
         return new GetOrderBookResponseDto(
             figi: $data['figi'] ?? '',
             depth: (int)($data['depth'] ?? 20),
             bids: $bids,
             asks: $asks,
-            time: isset($data['time']) ? new DateTimeImmutable($data['time']) : new DateTimeImmutable(),
+            time: isset($data['time']) ? new DateTimeImmutable($data['time']) : null,
             instrumentUid: $data['instrumentUid'] ?? '',
             limitUp: $limitUpQuotation?->value,
             limitDown: $limitDownQuotation?->value,
+            lastPrice: $lastPriceQuotation?->value,
+            lastPriceTs: isset($data['lastPriceTs']) ? new DateTimeImmutable($data['lastPriceTs']) : null,
         );
     }
 }
