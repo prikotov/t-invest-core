@@ -5,12 +5,17 @@ declare(strict_types=1);
 namespace TInvest\Core\Tests\Component\TInvest\OperationsService;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\Response;
 use JsonException;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
+use TInvest\Core\Component\TInvest\OperationsService\Dto\GetOperationsByCursorRequestDto;
+use TInvest\Core\Component\TInvest\OperationsService\Mapper\GetOperationsByCursorRequestMapper;
+use TInvest\Core\Component\TInvest\OperationsService\Mapper\GetOperationsByCursorResponseMapper;
 use TInvest\Core\Component\TInvest\OperationsService\Mapper\GetPortfolioResponseMapper;
 use TInvest\Core\Component\TInvest\OperationsService\Mapper\GetPositionsResponseMapper;
 use TInvest\Core\Component\TInvest\OperationsService\Mapper\OperationMapper;
@@ -32,9 +37,13 @@ final class OperationsServiceComponentTest extends TestCase
         $this->mockHandler = new MockHandler();
     }
 
-    private function createComponent(): OperationsServiceComponent
+    private function createComponent(?array &$history = null): OperationsServiceComponent
     {
-        $client = new Client(['handler' => HandlerStack::create($this->mockHandler)]);
+        $stack = HandlerStack::create($this->mockHandler);
+        if ($history !== null) {
+            $stack->push(Middleware::history($history));
+        }
+        $client = new Client(['handler' => $stack]);
 
         return new OperationsServiceComponent(
             'test-token',
@@ -50,6 +59,8 @@ final class OperationsServiceComponentTest extends TestCase
             ),
             new OperationMapper(new MoneyFactory()),
             new GetPositionsResponseMapper(new MoneyFactory()),
+            new GetOperationsByCursorRequestMapper(),
+            new GetOperationsByCursorResponseMapper(new MoneyFactory(), new QuotationFactory()),
         );
     }
 
@@ -425,5 +436,208 @@ final class OperationsServiceComponentTest extends TestCase
         // выполняет ленивый маппинг второй позиции.
         $this->expectException(TypeError::class);
         $iterator->next();
+    }
+
+    private function queueJsonResponse(array $payload): void
+    {
+        $this->queueResponse((string) json_encode($payload));
+    }
+
+    private function operationsByCursorPagePayload(): array
+    {
+        return [
+            'items' => [
+                [
+                    'cursor' => 'op-cursor-1',
+                    'brokerAccountId' => '2019246368',
+                    'id' => 'operation-1',
+                    'parentOperationId' => 'parent-1',
+                    'name' => 'Покупка',
+                    'date' => '2024-01-15T10:30:00Z',
+                    'type' => 'OPERATION_TYPE_BUY',
+                    'description' => 'Покупка акций',
+                    'state' => 'OPERATION_STATE_EXECUTED',
+                    'instrumentUid' => 'inst-uid-1',
+                    'figi' => 'BBG000000001',
+                    'instrumentType' => 'share',
+                    'instrumentKind' => 'INSTRUMENT_KIND_SHARE',
+                    'payment' => ['currency' => 'RUB', 'units' => '1000', 'nano' => 500000000],
+                    'price' => ['currency' => 'RUB', 'units' => '100', 'nano' => 0],
+                    'commission' => ['currency' => 'RUB', 'units' => '1', 'nano' => 50000000],
+                    'yieldRelative' => ['units' => '5', 'nano' => 0],
+                    'accruedInt' => ['currency' => 'RUB', 'units' => '0', 'nano' => 0],
+                    'quantity' => '10',
+                    'quantityRest' => '0',
+                    'quantityDone' => '10',
+                    'cancelReason' => '',
+                    'tradesInfo' => [
+                        'trades' => [
+                            [
+                                'num' => 'trade-1',
+                                'date' => '2024-01-15T10:30:00Z',
+                                'quantity' => '10',
+                                'price' => ['currency' => 'RUB', 'units' => '100', 'nano' => 0],
+                                'yield' => ['currency' => 'RUB', 'units' => '0', 'nano' => 0],
+                                'yieldRelative' => ['units' => '0', 'nano' => 0],
+                            ],
+                        ],
+                    ],
+                    'assetUid' => 'asset-uid-1',
+                ],
+            ],
+            'hasNext' => true,
+            'nextCursor' => 'cursor-2',
+        ];
+    }
+
+    public function testGetOperationsByCursorMapsSuccessfulPage(): void
+    {
+        $history = [];
+        $this->queueJsonResponse($this->operationsByCursorPagePayload());
+        $component = $this->createComponent($history);
+
+        $request = new GetOperationsByCursorRequestDto(
+            accountId: '2019246368',
+            cursor: 'cursor-1',
+            limit: 500,
+        );
+
+        $result = $component->getOperationsByCursor($request);
+
+        $this->assertCount(1, $history);
+        $sentRequest = $history[0]['request'];
+        $this->assertStringEndsWith(
+            'tinkoff.public.invest.api.contract.v1.OperationsService/GetOperationsByCursor',
+            (string) $sentRequest->getUri(),
+        );
+        $sentBody = json_decode((string) $sentRequest->getBody(), true);
+        $this->assertSame('2019246368', $sentBody['accountId']);
+        $this->assertSame('cursor-1', $sentBody['cursor']);
+        $this->assertSame(500, $sentBody['limit']);
+
+        $this->assertTrue($result->hasNext);
+        $this->assertSame('cursor-2', $result->nextCursor);
+        $this->assertCount(1, $result->items);
+
+        $item = $result->items[0];
+        $this->assertSame('op-cursor-1', $item->cursor);
+        $this->assertSame('2019246368', $item->brokerAccountId);
+        $this->assertSame('operation-1', $item->id);
+        $this->assertSame('parent-1', $item->parentOperationId);
+        $this->assertSame('Покупка', $item->name);
+        $this->assertSame('2024-01-15T10:30:00+00:00', $item->date->format('c'));
+        $this->assertSame('OPERATION_TYPE_BUY', $item->type);
+        $this->assertSame('Покупка акций', $item->description);
+        $this->assertSame('OPERATION_STATE_EXECUTED', $item->state);
+        $this->assertSame('inst-uid-1', $item->instrumentUid);
+        $this->assertSame('BBG000000001', $item->figi);
+        $this->assertSame('share', $item->instrumentType);
+        $this->assertSame('INSTRUMENT_KIND_SHARE', $item->instrumentKind);
+
+        $this->assertNotNull($item->payment);
+        $this->assertSame('RUB', $item->payment->currency);
+        $this->assertSame(1000.5, $item->payment->value);
+        $this->assertNotNull($item->price);
+        $this->assertSame(100.0, $item->price->value);
+        $this->assertNotNull($item->commission);
+        $this->assertSame(1.05, $item->commission->value);
+        $this->assertNull($item->yield);
+        $this->assertNotNull($item->yieldRelative);
+        $this->assertSame(5.0, $item->yieldRelative->value);
+        $this->assertNotNull($item->accruedInt);
+        $this->assertSame(0.0, $item->accruedInt->value);
+
+        $this->assertSame(10, $item->quantity);
+        $this->assertSame(0, $item->quantityRest);
+        $this->assertSame(10, $item->quantityDone);
+        $this->assertNull($item->cancelDateTime);
+        $this->assertSame('', $item->cancelReason);
+
+        $this->assertNotNull($item->trades);
+        $this->assertCount(1, $item->trades);
+        $trade = $item->trades[0];
+        $this->assertSame('trade-1', $trade->num);
+        $this->assertSame('2024-01-15T10:30:00+00:00', $trade->date->format('c'));
+        $this->assertSame(10, $trade->quantity);
+        $this->assertNotNull($trade->price);
+        $this->assertSame(100.0, $trade->price->value);
+        $this->assertNotNull($trade->yield);
+        $this->assertSame(0.0, $trade->yield->value);
+        $this->assertNotNull($trade->yieldRelative);
+        $this->assertSame(0.0, $trade->yieldRelative->value);
+
+        $this->assertSame('asset-uid-1', $item->assetUid);
+    }
+
+    public function testGetOperationsByCursorEmptyItemsIsValidResponse(): void
+    {
+        $this->queueJsonResponse(['items' => [], 'hasNext' => false]);
+        $this->queueJsonResponse(['hasNext' => false]);
+        $component = $this->createComponent();
+
+        $request = new GetOperationsByCursorRequestDto(accountId: '2019246368');
+
+        $withEmptyItems = $component->getOperationsByCursor($request);
+        $this->assertSame([], $withEmptyItems->items);
+        $this->assertFalse($withEmptyItems->hasNext);
+        $this->assertNull($withEmptyItems->nextCursor);
+
+        // Proto3 JSON не сериализует пустые списки: отсутствие ключа
+        // "items" — тоже валидная пустая страница.
+        $withoutItemsKey = $component->getOperationsByCursor($request);
+        $this->assertSame([], $withoutItemsKey->items);
+        $this->assertFalse($withoutItemsKey->hasNext);
+        $this->assertNull($withoutItemsKey->nextCursor);
+    }
+
+    public function testGetOperationsByCursorHasNextWithoutNextCursorReturnsAsData(): void
+    {
+        $this->queueJsonResponse(['items' => [], 'hasNext' => true]);
+        $component = $this->createComponent();
+
+        $result = $component->getOperationsByCursor(
+            new GetOperationsByCursorRequestDto(accountId: '2019246368'),
+        );
+
+        // Различимое состояние: потребитель сам решает, как трактовать
+        // страницу без курсора продолжения — исключение не бросается.
+        $this->assertTrue($result->hasNext);
+        $this->assertNull($result->nextCursor);
+        $this->assertSame([], $result->items);
+    }
+
+    public function testGetOperationsByCursorHttpErrorThrowsBadResponseException(): void
+    {
+        $this->mockHandler->append(
+            new Response(400, ['Content-Type' => 'application/json'], (string) json_encode(['message' => 'broken'])),
+        );
+        $component = $this->createComponent();
+
+        $this->expectException(BadResponseException::class);
+        $this->expectExceptionMessage('400 Bad Request');
+
+        $component->getOperationsByCursor(new GetOperationsByCursorRequestDto(accountId: '2019246368'));
+    }
+
+    public function testGetOperationsByCursorEmptyBodyThrows(): void
+    {
+        $this->queueResponse('');
+        $component = $this->createComponent();
+
+        $this->expectException(TInvestRequestException::class);
+        $this->expectExceptionMessage('GetOperationsByCursor: empty response body');
+
+        $component->getOperationsByCursor(new GetOperationsByCursorRequestDto(accountId: '2019246368'));
+    }
+
+    public function testGetOperationsByCursorBodyIsNotJsonObjectThrows(): void
+    {
+        $this->queueResponse('null');
+        $component = $this->createComponent();
+
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessage('must be a JSON object');
+
+        $component->getOperationsByCursor(new GetOperationsByCursorRequestDto(accountId: '2019246368'));
     }
 }
