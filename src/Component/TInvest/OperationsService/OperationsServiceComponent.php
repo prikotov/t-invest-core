@@ -8,10 +8,14 @@ use GuzzleHttp\Client;
 use Override;
 use Psr\Log\LoggerInterface;
 use stdClass;
+use TInvest\Core\Component\TInvest\OperationsService\Dto\GetOperationsByCursorRequestDto;
+use TInvest\Core\Component\TInvest\OperationsService\Dto\GetOperationsByCursorResponseDto;
 use TInvest\Core\Component\TInvest\OperationsService\Dto\GetOperationsRequestDto;
 use TInvest\Core\Component\TInvest\OperationsService\Dto\GetOperationsResponseDto;
 use TInvest\Core\Component\TInvest\OperationsService\Dto\GetPositionsResponseDto;
 use TInvest\Core\Component\TInvest\OperationsService\Dto\PortfolioDto;
+use TInvest\Core\Component\TInvest\OperationsService\Mapper\GetOperationsByCursorRequestMapper;
+use TInvest\Core\Component\TInvest\OperationsService\Mapper\GetOperationsByCursorResponseMapper;
 use TInvest\Core\Component\TInvest\OperationsService\Mapper\GetPortfolioResponseMapper;
 use TInvest\Core\Component\TInvest\OperationsService\Mapper\GetPositionsResponseMapper;
 use TInvest\Core\Component\TInvest\OperationsService\Mapper\OperationMapper;
@@ -29,6 +33,8 @@ final class OperationsServiceComponent implements OperationsServiceComponentInte
         private readonly GetPortfolioResponseMapper $getPortfolioResponseMapper,
         private readonly OperationMapper $operationMapper,
         private readonly GetPositionsResponseMapper $getPositionsResponseMapper,
+        private readonly GetOperationsByCursorRequestMapper $getOperationsByCursorRequestMapper,
+        private readonly GetOperationsByCursorResponseMapper $getOperationsByCursorResponseMapper,
     ) {
     }
 
@@ -173,5 +179,46 @@ final class OperationsServiceComponent implements OperationsServiceComponentInte
         $decoded = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
 
         return $this->operationMapper->map($decoded);
+    }
+
+    #[Override]
+    public function getOperationsByCursor(GetOperationsByCursorRequestDto $request): GetOperationsByCursorResponseDto
+    {
+        $body = $this->getOperationsByCursorRequestMapper->map($request);
+
+        $this->logger->debug('Get operations by cursor: {request}', ['request' => $body]);
+
+        $res = $this->client->post(
+            $this->getUrl('tinkoff.public.invest.api.contract.v1.OperationsService/GetOperationsByCursor'),
+            [
+                'headers' => $this->getHeaders(),
+                'body' => $body,
+            ]
+        );
+
+        $data = (string)$res->getBody();
+
+        if ($data === '') {
+            throw new TInvestRequestException('GetOperationsByCursor: empty response body.');
+        }
+
+        $encoded = json_encode(json_decode($data));
+        if ($encoded !== false) {
+            $this->logger->debug($encoded);
+        }
+
+        $decoded = json_decode($data, false, 512, JSON_THROW_ON_ERROR);
+
+        if (!$decoded instanceof stdClass) {
+            throw new UnexpectedValueException(sprintf(
+                'GetOperationsByCursor: response body must be a JSON object, %s given.',
+                get_debug_type($decoded),
+            ));
+        }
+
+        /** @var array<string, mixed> $assoc */
+        $assoc = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
+
+        return $this->getOperationsByCursorResponseMapper->map($assoc);
     }
 }
