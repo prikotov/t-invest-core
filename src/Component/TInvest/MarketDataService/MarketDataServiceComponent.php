@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace TInvest\Core\Component\TInvest\MarketDataService;
 
 use GuzzleHttp\Client;
+use JsonException;
 use Override;
 use Psr\Log\LoggerInterface;
 use stdClass;
@@ -16,8 +17,10 @@ use TInvest\Core\Component\TInvest\MarketDataService\Dto\GetOrderBookRequestDto;
 use TInvest\Core\Component\TInvest\MarketDataService\Dto\GetOrderBookResponseDto;
 use TInvest\Core\Component\TInvest\MarketDataService\Mapper\CandleMapper;
 use TInvest\Core\Component\TInvest\MarketDataService\Mapper\LastPriceMapper;
+use TInvest\Core\Component\TInvest\MarketDataService\Exception\TInvestBrokerException;
 use TInvest\Core\Component\TInvest\MarketDataService\Mapper\OrderBookMapper;
 use TInvest\Core\Component\TInvest\Shared\Exception\TInvestRequestException;
+use TInvest\Core\Component\TInvest\Shared\Exception\TInvestResponseException;
 use UnexpectedValueException;
 
 final class MarketDataServiceComponent implements MarketDataServiceComponentInterface
@@ -74,14 +77,42 @@ final class MarketDataServiceComponent implements MarketDataServiceComponentInte
             $this->logger->debug($encoded);
         }
 
-        if (empty($data)) {
-            return $this->candleMapper->map([]);
+        if (trim($data) === '') {
+            throw new TInvestRequestException('GetCandles: empty response body.');
         }
 
-        /** @var array<string, mixed> */
-        $decoded = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
+        try {
+            $decoded = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
+        } catch (JsonException $e) {
+            throw new TInvestResponseException(
+                sprintf('GetCandles: response body is not valid JSON: %s.', $e->getMessage()),
+                0,
+                $e,
+            );
+        }
 
+        if (!is_array($decoded)) {
+            throw new TInvestResponseException(sprintf(
+                'GetCandles: response body must be a JSON array, %s given.',
+                get_debug_type($decoded),
+            ));
+        }
+
+        if (isset($decoded['code'], $decoded['description'])) {
+            throw new TInvestBrokerException(
+                $this->normalizeBrokerCode($decoded['code']),
+                (string)$decoded['description'],
+                isset($decoded['message']) ? (string)$decoded['message'] : '',
+            );
+        }
+
+        /** @var array<string, mixed> $decoded */
         return $this->candleMapper->map($decoded);
+    }
+
+    private function normalizeBrokerCode(mixed $code): int|string
+    {
+        return is_int($code) || is_string($code) ? $code : (string)$code;
     }
 
     #[Override]
