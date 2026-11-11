@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace TInvest\Core\Component\TInvest\MarketDataService;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\BadResponseException;
 use JsonException;
 use Override;
 use Psr\Log\LoggerInterface;
@@ -63,15 +64,25 @@ final class MarketDataServiceComponent implements MarketDataServiceComponentInte
             $body['limit'] = $request->limit;
         }
 
-        $res = $this->client->post(
-            $this->getUrl('tinkoff.public.invest.api.contract.v1.MarketDataService/GetCandles'),
-            [
-                'headers' => $this->getHeaders(),
-                'body' => json_encode($body),
-            ]
-        );
+        try {
+            $res = $this->client->post(
+                $this->getUrl('tinkoff.public.invest.api.contract.v1.MarketDataService/GetCandles'),
+                [
+                    'headers' => $this->getHeaders(),
+                    'body' => json_encode($body),
+                ]
+            );
+        } catch (BadResponseException $e) {
+            $response = $e->getResponse();
 
-        $data = (string)$res->getBody();
+            return $this->parseCandleResponse((string)$response->getBody(), $response->getStatusCode());
+        }
+
+        return $this->parseCandleResponse((string)$res->getBody(), $res->getStatusCode());
+    }
+
+    private function parseCandleResponse(string $data, int $statusCode): GetCandlesResponseDto
+    {
         $encoded = json_encode(json_decode($data));
         if ($encoded !== false) {
             $this->logger->debug($encoded);
@@ -79,7 +90,7 @@ final class MarketDataServiceComponent implements MarketDataServiceComponentInte
 
         if (trim($data) === '') {
             throw new TInvestRequestException(
-                sprintf('GetCandles: empty response body (HTTP %d).', $res->getStatusCode()),
+                sprintf('GetCandles: empty response body (HTTP %d).', $statusCode),
             );
         }
 

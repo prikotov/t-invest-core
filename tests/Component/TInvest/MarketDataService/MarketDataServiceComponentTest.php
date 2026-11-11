@@ -54,6 +54,11 @@ final class MarketDataServiceComponentTest extends TestCase
         $this->mockHandler->append(new Response(200, ['Content-Type' => 'application/json'], $body));
     }
 
+    private function queueErrorResponse(int $status, string $body): void
+    {
+        $this->mockHandler->append(new Response($status, ['Content-Type' => 'application/json'], $body));
+    }
+
     private function createRequest(): GetLastPricesRequestDto
     {
         return new GetLastPricesRequestDto(['BBG000000001']);
@@ -305,6 +310,50 @@ final class MarketDataServiceComponentTest extends TestCase
             self::assertSame(5, $e->brokerCode);
             self::assertSame('50002', $e->description);
             self::assertStringContainsStringIgnoringCase('instrument not found', $e->brokerMessage);
+        }
+    }
+
+    public function testGetCandlesBrokerError50002ViaHttpStatus400ThrowsTyped(): void
+    {
+        $this->queueErrorResponse(
+            400,
+            '{"code":5,"description":"50002","message":"GetCandles: Instrument not found for uid=instrument-uid-1"}',
+        );
+        $component = $this->createComponent();
+
+        try {
+            $component->getCandles($this->createCandlesRequest());
+            self::fail('TInvestBrokerException expected');
+        } catch (TInvestBrokerException $e) {
+            self::assertSame(5, $e->brokerCode);
+            self::assertSame('50002', $e->description);
+            self::assertStringContainsStringIgnoringCase('instrument not found', $e->brokerMessage);
+        }
+    }
+
+    public function testGetCandlesEmptyBodyViaHttpStatus400ThrowsWithStatusInMessage(): void
+    {
+        $this->queueErrorResponse(400, '');
+        $component = $this->createComponent();
+
+        $this->expectException(TInvestRequestException::class);
+        $this->expectExceptionMessage('GetCandles: empty response body (HTTP 400).');
+
+        $component->getCandles($this->createCandlesRequest());
+    }
+
+    public function testGetCandlesInvalidJsonViaHttpStatus400ThrowsTypedNotJsonException(): void
+    {
+        $this->queueErrorResponse(400, '{"candles": ');
+        $component = $this->createComponent();
+
+        try {
+            $component->getCandles($this->createCandlesRequest());
+            self::fail('TInvestResponseException expected');
+        } catch (JsonException $e) {
+            self::fail('JsonException must not leak out: ' . $e->getMessage());
+        } catch (TInvestResponseException $e) {
+            self::assertStringContainsString('not valid JSON', $e->getMessage());
         }
     }
 
