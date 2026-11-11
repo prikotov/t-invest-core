@@ -76,10 +76,10 @@ final class CandleMapper
             ));
         }
 
-        return $this->quotationFactory->create($raw)
-            ?? throw new TInvestResponseException(
-                sprintf('GetCandles: candle field "%s" must contain units/nano.', $field),
-            );
+        $quotation = $this->quotationFactory->create($raw);
+        assert($quotation !== null);
+
+        return $quotation;
     }
 
     /**
@@ -96,10 +96,15 @@ final class CandleMapper
      */
     private function mapTime(array $candle): DateTimeImmutable
     {
-        return new DateTimeImmutable(
-            $candle['time']
-                ?? throw new TInvestResponseException('GetCandles: candle field "time" is missing.'),
-        );
+        $time = $candle['time'] ?? null;
+
+        if (!is_string($time) || $time === '') {
+            throw new TInvestResponseException(
+                'GetCandles: candle field "time" is missing or not a string.',
+            );
+        }
+
+        return new DateTimeImmutable($time);
     }
 
     /**
@@ -107,7 +112,14 @@ final class CandleMapper
      */
     private function mapIsComplete(array $candle): bool
     {
-        return (bool)($candle['isComplete']
-            ?? throw new TInvestResponseException('GetCandles: candle field "isComplete" is missing.'));
+        $isComplete = $candle['isComplete'] ?? null;
+
+        if (!is_bool($isComplete)) {
+            throw new TInvestResponseException(
+                'GetCandles: candle field "isComplete" must be a boolean.',
+            );
+        }
+
+        return $isComplete;
     }
 }
