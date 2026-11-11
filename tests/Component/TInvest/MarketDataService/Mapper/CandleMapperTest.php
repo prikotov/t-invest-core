@@ -19,18 +19,20 @@ final class CandleMapperTest extends TestCase
         $this->mapper = new CandleMapper(new QuotationFactory());
     }
 
-    public function testMapEmptyData(): void
+    public function testMapMissingCandlesKeyThrows(): void
     {
-        $result = $this->mapper->map([]);
+        $this->expectException(TInvestResponseException::class);
+        $this->expectExceptionMessage('field "candles" is missing');
 
-        $this->assertEmpty($result->candles);
+        $this->mapper->map([]);
     }
 
-    public function testMapValidObjectWithoutCandlesKeyReturnsEmptyResponse(): void
+    public function testMapObjectWithoutCandlesKeyThrows(): void
     {
-        $result = $this->mapper->map(['unrelated' => true]);
+        $this->expectException(TInvestResponseException::class);
+        $this->expectExceptionMessage('field "candles" is missing');
 
-        $this->assertSame([], $result->candles);
+        $this->mapper->map(['unrelated' => true]);
     }
 
     public function testMapCandlesFieldOfWrongTypeThrows(): void

@@ -140,7 +140,7 @@ final class MarketDataServiceComponentTest extends TestCase
         $component = $this->createComponent();
 
         $this->expectException(TInvestRequestException::class);
-        $this->expectExceptionMessage('GetCandles: empty response body');
+        $this->expectExceptionMessage('GetCandles: empty response body (HTTP 200).');
 
         $component->getCandles($this->createCandlesRequest());
     }
@@ -245,14 +245,37 @@ final class MarketDataServiceComponentTest extends TestCase
         }
     }
 
-    public function testGetCandlesWithoutCandlesKeyReturnsEmptyResponse(): void
+    public function testGetCandlesWithoutCandlesKeyThrows(): void
     {
         $this->queueResponse('{"unrelated": true}');
         $component = $this->createComponent();
 
-        $result = $component->getCandles($this->createCandlesRequest());
+        $this->expectException(TInvestResponseException::class);
+        $this->expectExceptionMessage('must contain a "candles" array');
 
-        self::assertSame([], $result->candles);
+        $component->getCandles($this->createCandlesRequest());
+    }
+
+    public function testGetCandlesJsonListThrows(): void
+    {
+        $this->queueResponse('[]');
+        $component = $this->createComponent();
+
+        $this->expectException(TInvestResponseException::class);
+        $this->expectExceptionMessage('must contain a "candles" array');
+
+        $component->getCandles($this->createCandlesRequest());
+    }
+
+    public function testGetCandlesBrokerCodeWithoutDescriptionThrows(): void
+    {
+        $this->queueResponse('{"code": 5}');
+        $component = $this->createComponent();
+
+        $this->expectException(TInvestResponseException::class);
+        $this->expectExceptionMessage('must contain a "candles" array');
+
+        $component->getCandles($this->createCandlesRequest());
     }
 
     public function testGetCandlesEmptyCandlesListIsValidEmptyResponse(): void
