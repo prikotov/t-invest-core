@@ -88,6 +88,72 @@ final class CandleMapperTest extends TestCase
         $this->mapper->map($data);
     }
 
+    public static function provideDefectiveTimeValues(): iterable
+    {
+        yield 'empty string' => [''];
+        yield 'false' => [false];
+        yield 'integer' => [123];
+    }
+
+    #[DataProvider('provideDefectiveTimeValues')]
+    public function testMapTimeDefectiveValueThrows(mixed $time): void
+    {
+        $data = [
+            'candles' => [array_merge($this->fullCandle(), ['time' => $time])],
+        ];
+
+        $this->expectException(TInvestResponseException::class);
+        $this->expectExceptionMessage('candle field "time" is missing or not a string');
+
+        $this->mapper->map($data);
+    }
+
+    public function testMapTimeAcceptsValidString(): void
+    {
+        $data = [
+            'candles' => [array_merge($this->fullCandle(), ['time' => '2024-03-01T15:30:00+03:00'])],
+        ];
+
+        $result = $this->mapper->map($data);
+
+        $this->assertSame('2024-03-01T15:30:00+03:00', $result->candles[0]->time->format('c'));
+    }
+
+    public static function provideDefectiveIsCompleteValues(): iterable
+    {
+        yield 'string zero' => ['0'];
+        yield 'integer zero' => [0];
+        yield 'null' => [null];
+    }
+
+    #[DataProvider('provideDefectiveIsCompleteValues')]
+    public function testMapIsCompleteDefectiveValueThrows(mixed $isComplete): void
+    {
+        $data = [
+            'candles' => [array_merge($this->fullCandle(), ['isComplete' => $isComplete])],
+        ];
+
+        $this->expectException(TInvestResponseException::class);
+        $this->expectExceptionMessage('candle field "isComplete" must be a boolean');
+
+        $this->mapper->map($data);
+    }
+
+    public function testMapIsCompleteAcceptsTrueAndFalse(): void
+    {
+        $data = [
+            'candles' => [
+                $this->fullCandle(),
+                array_merge($this->fullCandle(), ['isComplete' => false]),
+            ],
+        ];
+
+        $result = $this->mapper->map($data);
+
+        $this->assertTrue($result->candles[0]->isComplete);
+        $this->assertFalse($result->candles[1]->isComplete);
+    }
+
     public function testMapCandles(): void
     {
         $data = [

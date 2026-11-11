@@ -115,10 +115,13 @@ final class MarketDataServiceComponentTest extends TestCase
 
         $request = $this->mockHandler->getLastRequest();
         self::assertNotNull($request);
-        self::assertSame(
-            ['limit' => 50],
-            array_intersect_key(json_decode((string)$request->getBody(), true), ['limit' => 0]),
-        );
+        self::assertSame([
+            'instrumentId' => 'instrument-uid-1',
+            'from' => '2024-01-01T00:00:00+03:00',
+            'to' => '2024-01-31T00:00:00+03:00',
+            'interval' => 'CANDLE_INTERVAL_DAY',
+            'limit' => 50,
+        ], json_decode((string)$request->getBody(), true));
     }
 
     public function testGetCandlesMapsPayload(): void
@@ -286,6 +289,23 @@ final class MarketDataServiceComponentTest extends TestCase
         $result = $component->getCandles($this->createCandlesRequest());
 
         self::assertSame([], $result->candles);
+    }
+
+    public function testGetCandlesBrokerErrorTakesPriorityOverCandlesKey(): void
+    {
+        $this->queueResponse(
+            '{"candles":[],"code":5,"description":"50002","message":"GetCandles: instrument not found"}',
+        );
+        $component = $this->createComponent();
+
+        try {
+            $component->getCandles($this->createCandlesRequest());
+            self::fail('TInvestBrokerException expected');
+        } catch (TInvestBrokerException $e) {
+            self::assertSame(5, $e->brokerCode);
+            self::assertSame('50002', $e->description);
+            self::assertStringContainsStringIgnoringCase('instrument not found', $e->brokerMessage);
+        }
     }
 
     public function testGetLastPricesEmptyBodyThrows(): void
