@@ -15,9 +15,9 @@ use TInvest\Core\Component\TInvest\MarketDataService\Dto\GetLastPricesRequestDto
 use TInvest\Core\Component\TInvest\MarketDataService\Dto\GetLastPricesResponseDto;
 use TInvest\Core\Component\TInvest\MarketDataService\Dto\GetOrderBookRequestDto;
 use TInvest\Core\Component\TInvest\MarketDataService\Dto\GetOrderBookResponseDto;
+use TInvest\Core\Component\TInvest\MarketDataService\Exception\TInvestBrokerException;
 use TInvest\Core\Component\TInvest\MarketDataService\Mapper\CandleMapper;
 use TInvest\Core\Component\TInvest\MarketDataService\Mapper\LastPriceMapper;
-use TInvest\Core\Component\TInvest\MarketDataService\Exception\TInvestBrokerException;
 use TInvest\Core\Component\TInvest\MarketDataService\Mapper\OrderBookMapper;
 use TInvest\Core\Component\TInvest\Shared\Exception\TInvestRequestException;
 use TInvest\Core\Component\TInvest\Shared\Exception\TInvestResponseException;
@@ -78,7 +78,9 @@ final class MarketDataServiceComponent implements MarketDataServiceComponentInte
         }
 
         if (trim($data) === '') {
-            throw new TInvestRequestException('GetCandles: empty response body.');
+            throw new TInvestRequestException(
+                sprintf('GetCandles: empty response body (HTTP %d).', $res->getStatusCode()),
+            );
         }
 
         try {
@@ -104,6 +106,10 @@ final class MarketDataServiceComponent implements MarketDataServiceComponentInte
                 (string)$decoded['description'],
                 isset($decoded['message']) ? (string)$decoded['message'] : '',
             );
+        }
+
+        if (!isset($decoded['candles'])) {
+            throw new TInvestResponseException('GetCandles: response body must contain a "candles" array.');
         }
 
         /** @var array<string, mixed> $decoded */

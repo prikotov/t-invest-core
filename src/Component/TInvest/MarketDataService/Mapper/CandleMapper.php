@@ -23,7 +23,11 @@ final class CandleMapper
      */
     public function map(array $data): GetCandlesResponseDto
     {
-        $candlesData = $data['candles'] ?? [];
+        if (!isset($data['candles'])) {
+            throw new TInvestResponseException('GetCandles: field "candles" is missing.');
+        }
+
+        $candlesData = $data['candles'];
 
         if (!is_array($candlesData)) {
             throw new TInvestResponseException(sprintf(
