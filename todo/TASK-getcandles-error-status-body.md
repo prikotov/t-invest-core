@@ -12,15 +12,16 @@ T-Invest доставляет брокерные ошибки с не-2xx ста
 
 ## Требования (Must Have)
 
-- [ ] `MarketDataServiceComponent::getCandles()`: перехват `BadResponseException` от HTTP-клиента — тело ответа
+- [x] `MarketDataServiceComponent::getCandles()`: перехват `BadResponseException` от HTTP-клиента — тело ответа
       `$e->getResponse()->getBody()` проходит тот же строгий пайплайн разбора (пустое тело/JSON/ошибка брокера/candles),
       как при 2xx. Скоуп строго GetCandles: `getLastPrices()`, `getOrderBook()` и прочие методы не меняются.
-- [ ] Сообщение `TInvestRequestException` для пустого тела содержит фактический HTTP-статус ответа
+- [x] Сообщение `TInvestRequestException` для пустого тела содержит фактический HTTP-статус ответа
       (включая статусы из `BadResponseException`).
-- [ ] Тесты (MockHandler): `400 + {5,50002,instrument not found}` → `TInvestBrokerException` (пропускаемая ветка);
+- [x] Тесты (MockHandler): `400 + {5,50002,instrument not found}` → `TInvestBrokerException` (пропускаемая ветка);
       `400` + пустое тело → `TInvestRequestException` с «HTTP 400»; `400` + невалидный JSON → `TInvestResponseException`;
       регрессия 2xx-веток не сломана.
-- [ ] Проверки зелёные: `composer cs-check && composer stan && composer psalm && composer test`.
+- [x] Проверки зелёные: `composer cs-check && composer stan && composer psalm && composer test`
+      (153 теста, 570 assertions).
 
 ## Out of Scope
 
@@ -32,3 +33,4 @@ T-Invest доставляет брокерные ошибки с не-2xx ста
 | Дата | Автор | Изменение |
 | :--- | :--- | :--- |
 | 2026-11-11 15:35:29 (1794386129) | Лид Арагорн (pi) | Создание задачи по блокирующему замечанию B1 ревью Пуаро (stocks2 PR #438): as-is §5.1 требует разбора тела независимо от HTTP-статуса |
+| 2026-11-11 15:40:52 (1794386452) | Левша (backend_developer_levsha) | Реализация: перехват BadResponseException в getCandles, разбор через приватный parseCandleResponse(body, statusCode); тесты 400-веток (broker 50002 / пустое тело «HTTP 400» / невалидный JSON), регрессия 2xx зелёная; проверки cs/stan/psalm/test — OK (153 теста, 570 assertions) |
