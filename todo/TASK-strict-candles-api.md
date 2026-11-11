@@ -42,6 +42,9 @@
       строковый `code='5'` сохраняет строгий тип и не спутается с int `5`.
 - [x] `CandleMapper`: обязательные поля свечи (`volume`, `open`, `high`, `low`, `close`, `time`, `isComplete`)
       без guessed defaults — отсутствие/дефект обязательного поля → исключение.
+      `time` — строго непустая строка (не-строка/пустая → `TInvestResponseException`; непарсируемая строка —
+      нативное \Exception как ошибка PHP/типа, контракт as-is), `isComplete` — строго `bool`
+      (`"0"`/`0`/`null` → исключение, без `(bool)`-приведения).
       Вложенные `units`/`nano`: контракт фиксирует as-is fallback «отсутствующее → 0»
       (`QuotationVO.php:22-30` в stocks Yii2 + `QuantityHelper.php:12-15`) — воспроизведён и задокументирован тестом.
 - [x] Явный `CandleIntervalEnum::DAY` доступен через публичный API компонента без строковых fallback-ов
@@ -58,7 +61,7 @@
       50003/прочие; обязательные поля свечи (каждое отсутствующее);
       вложенные `units`/`nano` (оба/одно отсутствует); тело запроса без `limit` и с точными `from/to/uid`.
 - [x] Проверки зелёные: `composer cs-check && composer stan && composer psalm && composer test`
-      (141 тест, 546 assertions).
+      (150 тестов, 564 assertions).
 
 ## Out of Scope
 
@@ -77,3 +80,4 @@
 | 2026-11-11 12:17:10 (1794374230) | Лид Арагорн (pi) | Создание задачи по итогам разведки Левши (блокировка TASK-sync-tinvest-candles-sync в stocks2, PR #438) |
 | 2026-11-11 12:50:08 (1794376208) | Левша (backend_developer_levsha) | Реализация: TInvestResponseException/TInvestBrokerException, строгий разбор GetCandles, CandleMapper без guessed defaults, тесты всех веток; проверки зелёные (feat b7cf058, test b82eff9) |
 | 2026-11-11 13:04:24 (1794377064) | Левша (backend_developer_levsha) | Self-review: валидный JSON без ключа `candles` → `TInvestResponseException` и полная остановка как в as-is (§5.2/§7: список `[]`, `{"unrelated":true}`, `{"code":5}` без `description`); HTTP-статус в сообщении пустого тела; импорты по алфавиту; проверки зелёные (141 тест, 546 assertions) |
+| 2026-11-11 13:14:32 (1794377672) | Левша (backend_developer_levsha) | Правки по ревью Пуаро (APPROVE, неблокирующие): `mapTime` — строго `!is_string \|\| ''` → `TInvestResponseException` (устранён скрытый fallback «дефект → now»), непарсируемая строка — нативное \Exception; `mapIsComplete` — строго `is_bool` (устранён `(bool)`-cast на `"0"`/`0`); `mapQuotation` — убран недостижимый `?? throw` (фабрика возвращает null только на null-входе, сигнатуру фабрики не сужали — 6 вызовов в 3 других сервисах вне скоупа), инвариант через `assert`; тесты: дефектные `time` (''/false/123), дефектные `isComplete` ("0"/0/null), полный `assertSame` тела с `limit:50`, приоритет broker-ветки при `candles`+`code/description`; проверки зелёные (150 тестов, 564 assertions) |
